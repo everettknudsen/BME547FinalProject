@@ -1,4 +1,4 @@
-#from pymodm import connect
+# from pymodm import connect
 from flask import Flask, jsonify, request
 from datetime import datetime
 from PIL import Image
@@ -28,8 +28,8 @@ def post_login():
     email = request.get_json()
     is_email(email)
 
-    #for user in User.objects.raw({}):
-        # view database or upload new image
+    # for user in User.objects.raw({}):
+    # view database or upload new image
     return jsonify(email)
 
 
@@ -41,8 +41,8 @@ def post_new_image():
     """
     im = request.get_json()
     # for user in User.objects.raw({}):
-        # pass
-        # assign image to user database
+    # assign image to user database
+    # return jsonify(im)
 
 
 @app.route('/api/image_list', methods=['GET'])
@@ -51,20 +51,31 @@ def get_image_list():
 
     :return: list of images
     """
-    for user in User.objects.raw({}):
-        image_list = []
-        pass
+    # for user in User.objects.raw({}):
+    image_list = []
     return jsonify(image_list)
 
 
-@app.route('/api/process', methods=['POST'])
-def post_process():
+@app.route('/api/choose_method', methods=['POST'])
+def post_choose_method():
     """Choose processing type
 
     :return:
     """
-    process =
+    im, method = request.get_json()
+    im_p = process_image(im, method)
+    return jsonify(im_p)
 
+
+def process_image(im, method):
+    """
+
+    :param im:
+    :param method:
+    :return:
+    """
+    im_p = []  # processed image
+    return im_p
 
 
 class NotEmail(Exception):
