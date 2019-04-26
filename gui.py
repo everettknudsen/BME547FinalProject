@@ -79,55 +79,38 @@ def uploadPressed(lbl, btn1, btn2):
     instruction_lbl = tk.Label(content_upload, text='Choose a photo')
     instruction_lbl.grid(column=2, row=1)
     
-    browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_file(), width=10)
+    browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_img(), width=10)
     browse_btn.grid(column=2, row=2)
+    
+    upload_btn = tk.Button(content_upload, text="Upload", command=lambda: submit_img(), width=10)
+    upload_btn.grid(column=2, row=4)
 
-    def load_file():
+    selectedPhoto = False
+    
+    def load_img():
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*") ))
-        print(fname)
-        print('1')
-        """
-        
-window = tk.Tk()
-window.geometry("500x500") # (optional)    
-img = Image.open(filepath)
-w, h = img.size
-pil_image2 = img.resize((150, int(h*(150/w))), Image.ANTIALIAS)
-img2 = ImageTk.PhotoImage(pil_image2)
-lbl = tk.Label(window, image = img2)
-lbl.image = img2
-lbl.grid(column=0, row=0, columnspan=2)
-window.mainloop()
-
-        """
-        img = Image.open(fname)
-        w, h = img.size
-        resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
-        imgTk = ImageTk.PhotoImage(resized) 
-        print('2')
-        showUpload = tk.Label(content_upload, image=imgTk)
-        showUpload.image = imgTk
-        print('3')
-        showUpload.grid(column=2, row=3, columnspan=2)
-        print('4')
-        """
         if fname:
             try:
-                print('1')
-                
-                tkImage = tk.PhotoImage(file=fname)
-                
-                print('2')
-                showUpload = tk.Label(content_upload, image=tkImage)
-                showUpload.pack()
-                print('3')
-                showUpload.grid(column = 2, row = 3)
-                print('4')
+                img = Image.open(fname)
+                w, h = img.size
+                resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+                imgTk = ImageTk.PhotoImage(resized) 
+                showUpload = tk.Label(content_upload, image=imgTk)
+                showUpload.image = imgTk
+                showUpload.grid(column=2, row=3, columnspan=2)
+                nonlocal selectedPhoto
+                selectedPhoto = True
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read file\n'%s'" % fname)
             return
-            """
+    
+    def submit_img():
+        if selectedPhoto:
+            print('submitting')
+        else:
+            print('havent chosen photo')
+            
     root.mainloop()
 
 # follow files are for image reading and showing and encoding
