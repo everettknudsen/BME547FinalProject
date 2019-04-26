@@ -8,12 +8,13 @@ Created on Thu Apr 25 20:15:05 2019
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
+from PIL import Image, ImageTk
 import base64
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 import cv2
-import sys
+import sys, os
 
 filepath = 'C:/Users/wainw/Pictures/pass.jpg'
 savepath = 'C:/Users/wainw/Pictures/pass.jpg'
@@ -79,21 +80,59 @@ def uploadPressed(lbl, btn1, btn2):
     instruction_lbl.grid(column=2, row=1)
     
     browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_file(), width=10)
-    browse_btn.grid(row=2, column=1)
+    browse_btn.grid(column=2, row=2)
 
     def load_file():
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*") ))
+        print(fname)
+        print('1')
+        """
+        
+window = tk.Tk()
+window.geometry("500x500") # (optional)    
+img = Image.open(filepath)
+w, h = img.size
+pil_image2 = img.resize((150, int(h*(150/w))), Image.ANTIALIAS)
+img2 = ImageTk.PhotoImage(pil_image2)
+lbl = tk.Label(window, image = img2)
+lbl.image = img2
+lbl.grid(column=0, row=0, columnspan=2)
+window.mainloop()
+
+        """
+        img = Image.open(fname)
+        w, h = img.size
+        resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+        imgTk = ImageTk.PhotoImage(resized) 
+        print('2')
+        showUpload = tk.Label(content_upload, image=imgTk)
+        showUpload.image = imgTk
+        print('3')
+        showUpload.grid(column=2, row=3, columnspan=2)
+        print('4')
+        """
         if fname:
             try:
-                print('here it comes: settings["template"].set({})'.format(fname))
+                print('1')
+                
+                tkImage = tk.PhotoImage(file=fname)
+                
+                print('2')
+                showUpload = tk.Label(content_upload, image=tkImage)
+                showUpload.pack()
+                print('3')
+                showUpload.grid(column = 2, row = 3)
+                print('4')
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read file\n'%s'" % fname)
             return
+            """
+    root.mainloop()
 
 # follow files are for image reading and showing and encoding
-            
-def getImg():
+
+def getImg(filepath):
     img=mpimg.imread(filepath)
     print(type(img))
     print("img array is originally %d bytes" % (img.nbytes))
