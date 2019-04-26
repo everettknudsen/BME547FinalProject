@@ -6,6 +6,9 @@ Created on Thu Apr 25 20:15:05 2019
 """
 
 import tkinter as tk
+from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import showerror
+
 
 local_url = 'http://127.0.0.1:5000'
 
@@ -18,6 +21,7 @@ def retrieve_email(lbl, entryBox, btn):
     getLoadType()
 
 
+# ggets email and sends to server
 def getEmail():
     root.title('Login Screen')
     content_email = tk.Frame(root).grid(column=0, row=0)
@@ -37,6 +41,7 @@ def destroyEmail(lbl, box, btn):
     btn.destroy()
 
 
+# this just lets user select upload or download. does not interact with server
 def getLoadType():
     root.title('Load Type')
     content_loadType = tk.Frame(root).grid(column=0, row=0)
@@ -54,16 +59,29 @@ def destroyLoadType(lbl, up, down):
     lbl.destroy()
     up.destroy()
     down.destroy()
-    
 
 
 def uploadPressed(lbl, btn1, btn2):
     destroyLoadType(lbl, btn1, btn2)
     root.title('Uploading')
-    content_loadType = tk.Frame(root).grid(column=0, row=0)
+    content_upload = tk.Frame(root).grid(column=0, row=0)
     root.geometry('400x200')
-    instruction_lbl = tk.Label(content_loadType, text='Uploading a photo')
+    instruction_lbl = tk.Label(content_upload, text='Choose a photo')
     instruction_lbl.grid(column=2, row=1)
+    
+    browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_file(), width=10)
+    browse_btn.grid(row=2, column=1)
+
+    def load_file():
+        fname = askopenfilename(filetypes=(("Template files", "*.tplate"),
+                                           ("HTML files", "*.html;*.htm"),
+                                           ("All files", "*.*") ))
+        if fname:
+            try:
+                print("""here it comes: self.settings["template"].set(fname)""")
+            except:                     # <- naked except is a bad idea
+                showerror("Open Source File", "Failed to read file\n'%s'" % fname)
+            return
 
 root = tk.Tk()
 email = ''
