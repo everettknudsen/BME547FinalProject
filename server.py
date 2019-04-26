@@ -71,7 +71,10 @@ def post_choose_method():
     :return:
     """
     im, im_name, method = request.get_json()
-    im_p, im_name_p = process_image(im_name, im, method='Histogram equalization')
+    im_p, im_name_p = process_image(
+        im_name, im,
+        method='Histogram equalization'
+    )
     return jsonify(im_p)
 
 

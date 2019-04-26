@@ -15,6 +15,7 @@ from skimage import exposure, data
 im = data.moon()
 im_p_he = exposure.equalize_hist(im)
 
+
 @pytest.mark.parametrize('x, expected', [
     ((im, 'moon', 'Histogram equalization'),
      (im_p_he, 'moon_he'))
