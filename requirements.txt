@@ -6,3 +6,6 @@ requests
 datetime
 numpy
 scikit-image
+pymodm
+dnspython
+mongoengine
