@@ -1,4 +1,4 @@
-from pymodm import connect
+#from pymodm import connect
 from flask import Flask, jsonify, request
 from datetime import datetime
 from PIL import Image
@@ -7,7 +7,6 @@ import numpy as np
 import logging
 
 # global variables
-email = []
 
 app = Flask(__name__)
 
@@ -26,10 +25,12 @@ def post_login():
 
     :return:
     """
-    # user = email from GUI
-    for user in User.objects.raw({}):
-        is_email(email)
+    email = request.get_json()
+    is_email(email)
+
+    #for user in User.objects.raw({}):
         # view database or upload new image
+    return jsonify(email)
 
 
 @app.route('/api/new_image', methods=['POST'])
@@ -38,12 +39,32 @@ def post_new_image():
 
     :return:
     """
-    filename = []  # filename as string?
-    is_image(filename)
-    # determine processing type
-    for user in User.objects.raw({}):
-        pass
+    im = request.get_json()
+    # for user in User.objects.raw({}):
+        # pass
         # assign image to user database
+
+
+@app.route('/api/image_list', methods=['GET'])
+def get_image_list():
+    """Obtains list of image titles for dropdown menu
+
+    :return: list of images
+    """
+    for user in User.objects.raw({}):
+        image_list = []
+        pass
+    return jsonify(image_list)
+
+
+@app.route('/api/process', methods=['POST'])
+def post_process():
+    """Choose processing type
+
+    :return:
+    """
+    process =
+
 
 
 class NotEmail(Exception):
@@ -73,7 +94,7 @@ def handle_not_email(error):
 def is_email(x):
     """Tests if input is an email
 
-        :param x: attending email
+        :param x: user email
         :return:
         """
     if '@' in x:
@@ -81,50 +102,12 @@ def is_email(x):
         if len(x) == 2 and '.' in x[1]:
             pass
         else:
-            message_400 = 'Please enter a valid email address' \
-                          'for attending_email.'
+            message_400 = 'Please enter a valid email address.'
             raise NotEmail(message_400, status_code=400)
     else:
-        message_400 = 'Please enter a valid email address' \
-                      'for attending_email.'
+        message_400 = 'Please enter a valid email address.'
         raise NotEmail(message_400, status_code=400)
 
 
-class NotImage(Exception):
-    # adapted from http://flask.pocoo.org/docs/1.0
-    # patterns/apierrors/
-    status_code = 400
-
-    def __init__(self, message, status_code=None):
-        Exception.__init__(self)
-        if status_code is not None:
-            self.status_code = status_code
-        self.message = message
-
-    def to_dict(self):
-        rv = dict()
-        rv['message'] = self.message
-        return rv
-
-
-@app.errorhandler(NotImage)
-def handle_not_email(error):
-    resp = jsonify(error.to_dict())
-    resp.status_code = error.status_code
-    return resp
-
-
-def is_image(filename):
-    """Tests if input is an image
-
-        :param filename: uploaded file
-        :return:
-        """
-    try:
-        im = Image.open(filename)
-    except IOError:
-        print('File is not a valid image.')
-    try:
-        imghdr.what(filename)
-    except:
-        print('File is not a valid image.')
+if __name__ == '__main__':
+    app.run()
