@@ -9,7 +9,8 @@ email = []
 
 app = Flask(__name__)
 
-connect()
+# connect()
+
 
 @app.route('/', methods=['GET'])
 def server_on():
