@@ -99,7 +99,8 @@ def process_image(im, im_name, method):
     else:
         tag = 'he'
         im_p = exposure.equalize_hist(im)
-    im_name_p = im_name + '_' + tag # image name tagged with processing method
+    im_name_p = im_name + '_' + tag
+    # image name tagged with processing method
     return im_p, im_name_p
 
 
