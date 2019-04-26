@@ -8,6 +8,15 @@ Created on Thu Apr 25 20:15:05 2019
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
+import base64
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import numpy as np
+import cv2
+import sys
+
+filepath = 'C:/Users/wainw/Pictures/pass.jpg'
+savepath = 'C:/Users/wainw/Pictures/pass.jpg'
 
 
 local_url = 'http://127.0.0.1:5000'
@@ -73,15 +82,38 @@ def uploadPressed(lbl, btn1, btn2):
     browse_btn.grid(row=2, column=1)
 
     def load_file():
-        fname = askopenfilename(filetypes=(("Template files", "*.tplate"),
-                                           ("HTML files", "*.html;*.htm"),
+        fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*") ))
         if fname:
             try:
-                print("""here it comes: self.settings["template"].set(fname)""")
+                print('here it comes: settings["template"].set({})'.format(fname))
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read file\n'%s'" % fname)
             return
+
+# follow files are for image reading and showing and encoding
+            
+def getImg():
+    img=mpimg.imread(filepath)
+    print(type(img))
+    print("img array is originally %d bytes" % (img.nbytes))
+    return img
+
+def encode(img):
+    retval, buffer = cv2.imencode('.jpg', img)
+    jpg_as_text = base64.b64encode(buffer)
+    print('txt',sys.getsizeof(jpg_as_text))
+    return jpg_as_text
+
+def decode(jpg_as_text):
+    nparr = np.frombuffer(base64.b64decode(jpg_as_text), np.uint8)
+    print('nparr',nparr.nbytes)
+    return nparr
+
+def showImg(nparr):
+    img2 = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    imgplot = plt.imshow(img2)
+    plt.show() 
 
 root = tk.Tk()
 email = ''
