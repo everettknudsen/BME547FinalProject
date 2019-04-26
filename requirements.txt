@@ -8,3 +8,4 @@ numpy
 scikit-image
 pymodm
 dnspython
+matplotlib
