@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from skimage import exposure
 
 # global variables
-im =[]
+im = []
 
 app = Flask(__name__)
 
