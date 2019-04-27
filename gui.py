@@ -50,6 +50,11 @@ def getEmail():
     root.mainloop()
     return
 
+def returnToLogin(loadWindow):
+    destroyWindow(loadWindow)
+    getEmail()
+    return
+
 # this just lets user select upload or download. does not interact with server
 def getLoadType():
     root.title('Load Type')
@@ -57,11 +62,15 @@ def getLoadType():
     content_loadType.grid(column=0, row=0)
     root.geometry('500x300')
     instruction_lbl = tk.Label(content_loadType, text='Would you like to upload a photo(s) or download?')
-    instruction_lbl.grid(column=2, row=1)
+    instruction_lbl.grid(column=2, row=1, pady=20)
     upload_btn = tk.Button(content_loadType, text='Upload', command=lambda: uploadPressed(content_loadType))
     upload_btn.grid(column=2, row=3)
     download_btn = tk.Button(content_loadType, text='Download', command="buttonpressed")
     download_btn.grid(column=3, row=3)
+    back_btn = tk.Button(content_loadType, text='Back to Login', command=lambda: returnToLogin(content_loadType), width=20)
+    # add padding for button
+    back_btn.grid(column=3, row=4, pady=100)
+    
     root.mainloop()
     return
 
@@ -74,17 +83,17 @@ def uploadScreen():
     root.title('Uploading')
     content_upload = tk.Frame(root)
     content_upload.grid(column=0, row=0)
-    root.geometry('500x300')
+    root.geometry('700x300')
     instruction_lbl = tk.Label(content_upload, text='Choose a photo')
-    instruction_lbl.grid(column=0, row=0)
+    instruction_lbl.grid(column=0, row=0, padx=20)
 
     # create browse button
     browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_img(), width=10)
-    browse_btn.grid(column=1, row=0)
+    browse_btn.grid(column=1, row=0, padx=20)
 
     # create upload button
     upload_btn = tk.Button(content_upload, text="Upload", command=lambda: submit_img(content_upload), width=10)
-    upload_btn.grid(column=3, row=0)
+    upload_btn.grid(column=3, row=0, padx=20)
 
     # set slectedPhoto to False because no photo selected at this point
     selectedPhoto = False
@@ -111,6 +120,10 @@ def uploadScreen():
                             variable=process, value='rv',
                             command=lambda: updateProcessed())
     rv_btn.grid(column=4, row=4)
+    
+    back_btn = tk.Button(content_upload, text='Back', command=lambda: returnToMenu_upload(content_upload), width=20)
+    back_btn.grid(column=4, row=6, pady=50)
+    
     def load_img():
         nonlocal fname
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
@@ -140,6 +153,12 @@ def uploadScreen():
             print(fname.lower(), "is not a valid photo file")
         return
     
+    def returnToMenu_upload(uploadWindow):
+        destroyWindow(uploadWindow)
+        getLoadType()
+        return
+
+    
     def returnToMenu_uploadSuccess(successWindow, uploadWindow):
         destroyWindow(successWindow)
         destroyWindow(uploadWindow)
@@ -156,13 +175,14 @@ def uploadScreen():
             print('submitting')
             # POST username, image and imgProcessed, and timestamp, latency
             submitSuccess = tk.Tk()
-            submitSuccess.geometry("300x150") # (optional)    
+            submitSuccess.title('Submit Success')
+            submitSuccess.geometry("400x150") # (optional)    
             lbl = tk.Label(submitSuccess, text='Successfully Submitted Photo')
             lbl.grid(column=0, row=0, columnspan=2)
-            lbl2 = tk.Button(submitSuccess, text='Return to Main Menu', command=lambda: returnToMenu_uploadSuccess(submitSuccess, uploadWindow), width=30)
-            lbl2.grid(column=0, row=1)
+            lbl2 = tk.Button(submitSuccess, text='Return to Main Menu', command=lambda: returnToMenu_uploadSuccess(submitSuccess, uploadWindow), width=20)
+            lbl2.grid(column=0, row=1, pady=20)
             lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or Process', command=lambda: returnToUpload_uploadSuccess(submitSuccess), width=30)
-            lbl3.grid(column=1, row=1)
+            lbl3.grid(column=1, row=1, pady=20)
             
             
             submitSuccess.mainloop()
