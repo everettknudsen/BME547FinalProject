@@ -23,6 +23,10 @@ def retrieve_email(lbl, entryBox, btn):
     emailBox = entryBox
     global email
     email = emailBox.get()
+    # sending email to server, preps server for upload or polls for download
+    # this will be primary key of database
+    # for upload flow, not used until image is uploaded
+    # for download flow, used immediately to populate dropdown of images
     # requests.post(local_url+'/api/login', json=email)
     destroyEmail(lbl, entryBox, btn)
     getLoadType()
