@@ -6,7 +6,6 @@ import logging
 
 import base64
 import pickle
-import sys
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -54,6 +53,19 @@ def post_new_image(email):
     submit_img_json = request.get_json()
     img = submit_img_json['img']
     processedImg = submit_img_json['processedImg']
+
+    img0 = str2im(img)
+    processedImg0 = str2im(processedImg)
+
+    figure1 = plt.figure()
+    plt.interactive(True)
+    plt.imshow(img0)
+    plt.show()
+
+    figure2 = plt.figure()
+    plt.interactive(True)
+    plt.imshow(processedImg0)
+    plt.show()
 
     return jsonify(img, processedImg)
 
