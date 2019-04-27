@@ -148,6 +148,7 @@ def uploadScreen():
     
     def returnToUpload_uploadSuccess(successWindow):
         destroyWindow(successWindow)
+        
         return
     
     def submit_img(uploadWindow):
