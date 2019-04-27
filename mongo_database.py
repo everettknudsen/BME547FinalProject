@@ -26,6 +26,16 @@ class UserImages(MongoModel):
     user_actions = fields.ListField()
 
 
+def check_if_user_registered(email):
+    try:
+        user = UserImages.objects.raw({"_id": email}).first()
+        user_status = True
+        return user_status
+    except UserImages.DoesNotExist:
+        user_status = False
+        return user_status
+
+
 def add_new_user(email):
     """
     This function initializes a user in
@@ -41,6 +51,9 @@ def add_new_user(email):
                       rev_count=0
                       )
     user.save()
+
+    status_message = "User registered!"
+    return status_message, 200
 
 
 def get_user_data(email):
@@ -58,7 +71,8 @@ def get_user_data(email):
             'rev_count': user.rev_count,
             'user_actions': user.user_actions,
         }
-    except UserImages.DoesNotExist:
-        user_data = "The user does not exist! " \
-                    "Go back and register user!"
         return 200
+    except UserImages.DoesNotExist:
+        user_dict = "The user does not exist! " \
+                    "Go back and register user!"
+        return 400
