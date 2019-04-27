@@ -32,7 +32,7 @@ def retrieve_email(lbl, entryBox, btn):
 def getEmail():
     root.title('Login Screen')
     content_email = tk.Frame(root).grid(column=0, row=0)
-    root.geometry('400x200')
+    root.geometry('500x300')
     instruction_lbl = tk.Label(content_email, text='Please enter your email.')
     instruction_lbl.grid(column=1, row=1)
     emailBox= tk.Entry(content_email)
@@ -52,7 +52,7 @@ def destroyEmail(lbl, box, btn):
 def getLoadType():
     root.title('Load Type')
     content_loadType = tk.Frame(root).grid(column=0, row=0)
-    root.geometry('400x200')
+    root.geometry('500x300')
     instruction_lbl = tk.Label(content_loadType, text='Would you like to upload a photo(s) or download?')
     instruction_lbl.grid(column=2, row=1)
     upload_btn = tk.Button(content_loadType, text='Upload', command=lambda: uploadPressed(instruction_lbl, upload_btn, download_btn))
@@ -72,50 +72,47 @@ def uploadPressed(lbl, btn1, btn2):
     destroyLoadType(lbl, btn1, btn2)
     root.title('Uploading')
     content_upload = tk.Frame(root).grid(column=0, row=0)
-    root.geometry('400x200')
+    root.geometry('500x300')
     instruction_lbl = tk.Label(content_upload, text='Choose a photo')
-    instruction_lbl.grid(column=2, row=1)
+    instruction_lbl.grid(column=0, row=0)
 
     # create browse button
     browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_img(), width=10)
-    browse_btn.grid(column=2, row=2)
+    browse_btn.grid(column=1, row=0)
 
     # create upload button
     upload_btn = tk.Button(content_upload, text="Upload", command=lambda: submit_img(), width=10)
-    upload_btn.grid(column=2, row=4)
+    upload_btn.grid(column=3, row=0)
 
     # set slectedPhoto to False because no photo selected at this point
     selectedPhoto = False
+    # intialize filename for photo
+    fname = ''
 
     # create radiobuttons for what type of processing
-    processes = [
-        ("Hist. Equalization", "he"),
-        ("Contrast Stretching", "cs"),
-        ("Log Compression", "lc"),
-        ("Reverse Video", "rv"),]
-
     process = tk.StringVar()
     process.set("he") # initialize
     he_btn = tk.Radiobutton(content_upload, text='Histogram Equalization',
                             variable=process, value='he',
                             command=lambda: updateProcessed())
-    he_btn.grid(column=4, row=3)
+    he_btn.grid(column=4, row=1)
     cs_btn = tk.Radiobutton(content_upload, text='Contrast Stretching',
                             variable=process, value='cs',
                             command=lambda: updateProcessed())
-    cs_btn.grid(column=4, row=4)
+    cs_btn.grid(column=4, row=2)
     lc_btn = tk.Radiobutton(content_upload, text='Log Compression',
                             variable=process, value='lc',
                             command=lambda: updateProcessed())
-    lc_btn.grid(column=4, row=5)
+    lc_btn.grid(column=4, row=3)
     rv_btn = tk.Radiobutton(content_upload, text='Reverse Video',
                             variable=process, value='rv',
                             command=lambda: updateProcessed())
-    rv_btn.grid(column=4, row=6)
+    rv_btn.grid(column=4, row=4)
     
     
     
     def load_img():
+        nonlocal fname
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*") ))
         if fname:
@@ -126,7 +123,7 @@ def uploadPressed(lbl, btn1, btn2):
                 imgTk = ImageTk.PhotoImage(resized) 
                 showUpload = tk.Label(content_upload, image=imgTk)
                 showUpload.image = imgTk
-                showUpload.grid(column=2, row=3, columnspan=2)
+                showUpload.grid(column=0, row=1, columnspan=2, rowspan=2)
                 nonlocal selectedPhoto
                 selectedPhoto = True
             except:                     # <- naked except is a bad idea
@@ -138,8 +135,33 @@ def uploadPressed(lbl, btn1, btn2):
             print('submitting')
         else:
             print('havent chosen photo')
+        return
+
+    
     def updateProcessed():
-        return True
+        nonlocal process
+        nonlocal fname
+        
+        command = process.get()
+        processedImg = ''
+        if command == 'he':
+            img = Image.open(fname)
+            processedImg = histEQ(img)
+        elif command == 'cs':
+            img = Image.open(fname)
+            processedImg = contrastStretch(img)
+        else:
+            print('no process selected')
+            return
+        w, h = processedImg.size
+        resizeProcess = processedImg.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+        
+        imgTkprocessed = ImageTk.PhotoImage(resizeProcess) 
+        showProcessed = tk.Label(content_upload, image=imgTkprocessed)
+        showProcessed.image = imgTkprocessed
+        showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
+    
+        return
             
     root.mainloop()
 
@@ -158,7 +180,7 @@ def histEQ(pilImg):
 def contrastStretch(pilImg):
     npImg = PILtoNumpy(pilImg)
     p30, p70 = np.percentile(npImg, (30, 70))
-    return NumpytoPIL(exposure.rescale_intensity(img1, in_range=(p30, p70)))
+    return NumpytoPIL(exposure.rescale_intensity(npImg, in_range=(p30, p70)))
     
 def getImg(filepath):
     img=mpimg.imread(filepath)
