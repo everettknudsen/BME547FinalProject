@@ -12,3 +12,4 @@ mongoengine
 pymongo
 tqdm
 python-dateutil
+matplotlib
