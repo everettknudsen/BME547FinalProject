@@ -14,11 +14,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 import cv2
-import sys, os
-
-filepath = 'C:/Users/wainw/Pictures/pass.jpg'
-savepath = 'C:/Users/wainw/Pictures/pass.jpg'
-
+import sys
+from skimage import exposure
 
 local_url = 'http://127.0.0.1:5000'
 
@@ -78,14 +75,45 @@ def uploadPressed(lbl, btn1, btn2):
     root.geometry('400x200')
     instruction_lbl = tk.Label(content_upload, text='Choose a photo')
     instruction_lbl.grid(column=2, row=1)
-    
+
+    # create browse button
     browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_img(), width=10)
     browse_btn.grid(column=2, row=2)
-    
+
+    # create upload button
     upload_btn = tk.Button(content_upload, text="Upload", command=lambda: submit_img(), width=10)
     upload_btn.grid(column=2, row=4)
 
+    # set slectedPhoto to False because no photo selected at this point
     selectedPhoto = False
+
+    # create radiobuttons for what type of processing
+    processes = [
+        ("Hist. Equalization", "he"),
+        ("Contrast Stretching", "cs"),
+        ("Log Compression", "lc"),
+        ("Reverse Video", "rv"),]
+
+    process = tk.StringVar()
+    process.set("he") # initialize
+    he_btn = tk.Radiobutton(content_upload, text='Histogram Equalization',
+                            variable=process, value='he',
+                            command=lambda: updateProcessed())
+    he_btn.grid(column=4, row=3)
+    cs_btn = tk.Radiobutton(content_upload, text='Contrast Stretching',
+                            variable=process, value='cs',
+                            command=lambda: updateProcessed())
+    cs_btn.grid(column=4, row=4)
+    lc_btn = tk.Radiobutton(content_upload, text='Log Compression',
+                            variable=process, value='lc',
+                            command=lambda: updateProcessed())
+    lc_btn.grid(column=4, row=5)
+    rv_btn = tk.Radiobutton(content_upload, text='Reverse Video',
+                            variable=process, value='rv',
+                            command=lambda: updateProcessed())
+    rv_btn.grid(column=4, row=6)
+    
+    
     
     def load_img():
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
@@ -110,11 +138,28 @@ def uploadPressed(lbl, btn1, btn2):
             print('submitting')
         else:
             print('havent chosen photo')
+    def updateProcessed():
+        return True
             
     root.mainloop()
 
 # follow files are for image reading and showing and encoding
+def PILtoNumpy(pilImg):
+    return np.array(pilImg)
 
+def NumpytoPIL(npImg):
+    rescale_out = exposure.rescale_intensity(npImg, out_range=(0, 255))
+    return Image.fromarray(rescale_out.astype('uint8'))
+
+def histEQ(pilImg):
+    npImg = PILtoNumpy(pilImg)
+    return NumpytoPIL(exposure.equalize_hist(npImg))
+
+def contrastStretch(pilImg):
+    npImg = PILtoNumpy(pilImg)
+    p30, p70 = np.percentile(npImg, (30, 70))
+    return NumpytoPIL(exposure.rescale_intensity(img1, in_range=(p30, p70)))
+    
 def getImg(filepath):
     img=mpimg.imread(filepath)
     print(type(img))
@@ -137,10 +182,22 @@ def showImg(nparr):
     imgplot = plt.imshow(img2)
     plt.show() 
 
+
 root = tk.Tk()
 email = ''
 getEmail()
 
 
-
+# uncomment following block of code to prove that contrast stretch and 
+# histogram equalization work!
+"""
+filepath = 'C:/Users/wainw/Pictures/pass.jpg'
+img = Image.open(filepath)
+fig0 = plt.figure()
+plt.imshow(PILtoNumpy(img))
+fig1 = plt.figure()
+plt.imshow(PILtoNumpy(contrastStretch(img)))
+fig2 = plt.figure()
+plt.imshow(PILtoNumpy(histEQ(img)))
+"""
 

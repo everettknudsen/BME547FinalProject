@@ -19,11 +19,13 @@ filepath = 'C:/Users/wainw/Pictures/pass.jpg'
 savepath = 'C:/Users/wainw/Pictures/pass.jpg'
 
 
+filepath = 'C:/Users/wainw/Pictures/pass.jpg'
 img1 = Image.open(filepath)
 img1 = np.array(img1)
 # Contrast stretching
 p2, p98 = np.percentile(img1, (30, 70))
 img_rescale = exposure.rescale_intensity(img1, in_range=(p2, p98))
+img_rescale = exposure.rescale_intensity(img_rescale, out_range=(0, 255))
 rePIL = Image.fromarray(img_rescale.astype('uint8'))
 print(img_rescale.shape)
 
