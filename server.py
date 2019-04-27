@@ -10,6 +10,8 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
+import mongo_database as mdb
+
 
 app = Flask(__name__)
 
@@ -34,8 +36,15 @@ def post_login():
     """
     email = request.get_json()
     is_email(email)
-    # for user in User.objects.raw({}):
-    # view database or upload new image
+
+    user_status = mdb.check_if_user_registered(email)
+
+    if user_status is True:
+        return
+    else:
+        r = mdb.add_new_user(email)
+
+    # return jsonify(r)
     return jsonify(email)
 
 
@@ -66,6 +75,7 @@ def post_new_image(email):
     plt.interactive(True)
     plt.imshow(processedImg0)
     plt.show()
+    print(email)
 
     return jsonify(img, processedImg)
 
