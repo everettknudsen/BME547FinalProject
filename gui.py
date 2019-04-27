@@ -102,6 +102,7 @@ def mainMenuScreen():
     # add padding for button
     back_btn.grid(column=2, row=4, pady=100)
 
+
     root.mainloop()
     return
 
@@ -176,6 +177,7 @@ def uploadScreen():
     back_btn = tk.Button(content_upload, text='Back', command=lambda: returnToMenu_upload(content_upload), width=20)
     back_btn.grid(column=4, row=6, pady=50)
 
+
     def load_img():
         """Function called when 'browse' button is pressed. Opens a native
         browsing window. It will load image as described in parent function,
@@ -186,6 +188,7 @@ def uploadScreen():
                                            ("All files", "*.*")))
 
         if fname.lower().endswith(('.jpeg', '.jpg', '.tiff', '.tif', '.png')):
+
             try:
                 img = Image.open(fname)
                 w, h = img.size
@@ -209,6 +212,7 @@ def uploadScreen():
         else:
             print(fname.lower(), "is not a valid photo file")
         return
+
 
     def returnToMenu_upload(uploadWindow):
         """Helper function for a 'back' button to move from Upload screen to
@@ -237,6 +241,7 @@ def uploadScreen():
         mainMenuScreen()
         return
 
+
     def returnToUpload_uploadSuccess(successWindow):
         """Helper function for a button to move back from upload success
         screen to Upload screen. Preserves previously selected image, but
@@ -249,6 +254,7 @@ def uploadScreen():
         destroyWindow(successWindow)
 
         return
+
 
     def submit_img(uploadWindow):
         """Function carried out on button press of 'upload'. POSTs image data
@@ -315,6 +321,7 @@ def uploadScreen():
 def downloadPressed(mainMenuWindow):
     """Helper function for a button to move from Main Menu to download screen
 
+
     Args:
         mainMenuWindow (tk.Frame): main menu window to be destroyed
         before moving to downloadScreen()
@@ -330,6 +337,7 @@ def downloadScreen():
     content_download = tk.Frame(root)
     content_download.grid(column=0, row=0)
     root.geometry('700x300')
+
 
     instruction_lbl = tk.Label(content_download, text='Choose a uploaded photo')
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
@@ -351,6 +359,7 @@ def downloadScreen():
 
     # when dropdown value changes, do this
     def change_dropdown(*args):
+
         """Function called when dropdown of image is changed. Displays the
         image.
         """
@@ -377,6 +386,7 @@ def downloadScreen():
     # link function to change dropdown
     imageName_normal.trace('w', change_dropdown)
 
+
     def downloadOrig(downloadWindow, img, filename):
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
         # ext = os.path.splitext(imageName_normal.get())[1]
@@ -384,6 +394,7 @@ def downloadScreen():
         saveDir = askdirectory()
         img.save(saveDir + '/' + filename)
         return
+
 
     def processedOptions():
         nonlocal imageName_normal
@@ -399,6 +410,7 @@ def downloadScreen():
         imageName_processed.set(nameNoExt + '_he' + ext)  # set default option
 
         # give further instructions
+
         instruction_lbl2 = tk.Label(content_download, text='Compare to a processed version')
         instruction_lbl2.grid(column=2, row=0, padx=20, pady=10)
         # create dropdown menu
@@ -417,6 +429,7 @@ def downloadScreen():
         """Helper function for a 'back' button to move from Download screen to
         Main Menu
 
+
         Args:
             downloadWindow (tk.Frame): download window to be destroyed before
             moving to main menu
@@ -424,6 +437,7 @@ def downloadScreen():
         destroyWindow(downloadWindow)
         mainMenuScreen()
         return
+
 
     root.mainloop()
     return
