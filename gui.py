@@ -13,8 +13,6 @@ import base64
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
-import cv2
-import sys
 from skimage import exposure
 
 local_url = 'http://127.0.0.1:5000'
