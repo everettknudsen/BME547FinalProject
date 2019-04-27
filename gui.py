@@ -47,7 +47,6 @@ def destroyEmail(lbl, box, btn):
     box.destroy()
     btn.destroy()
 
-
 # this just lets user select upload or download. does not interact with server
 def getLoadType():
     root.title('Load Type')
@@ -68,7 +67,7 @@ def destroyLoadType(lbl, up, down):
     down.destroy()
 
 
-def uploadPressed(lbl, btn1, btn2):
+def uploadPressed(lbl, btn1, btn2):    
     destroyLoadType(lbl, btn1, btn2)
     root.title('Uploading')
     content_upload = tk.Frame(root).grid(column=0, row=0)
@@ -91,7 +90,8 @@ def uploadPressed(lbl, btn1, btn2):
 
     # create radiobuttons for what type of processing
     process = tk.StringVar()
-    process.set("he") # initialize
+    process.set("he")  # initialize    
+    
     he_btn = tk.Radiobutton(content_upload, text='Histogram Equalization',
                             variable=process, value='he',
                             command=lambda: updateProcessed())
@@ -108,9 +108,6 @@ def uploadPressed(lbl, btn1, btn2):
                             variable=process, value='rv',
                             command=lambda: updateProcessed())
     rv_btn.grid(column=4, row=4)
-    
-    
-    
     def load_img():
         nonlocal fname
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
@@ -126,6 +123,14 @@ def uploadPressed(lbl, btn1, btn2):
                 showUpload.grid(column=0, row=1, columnspan=2, rowspan=2)
                 nonlocal selectedPhoto
                 selectedPhoto = True
+                # also set initial processed photo to histogram
+                processedImg = histEQ(img)
+                w, h = processedImg.size
+                resizeProcess = processedImg.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+                imgTkprocessed = ImageTk.PhotoImage(resizeProcess) 
+                showProcessed = tk.Label(content_upload, image=imgTkprocessed)
+                showProcessed.image = imgTkprocessed
+                showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read file\n'%s'" % fname)
             return
@@ -162,7 +167,7 @@ def uploadPressed(lbl, btn1, btn2):
         showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
     
         return
-            
+    
     root.mainloop()
 
 # follow files are for image reading and showing and encoding
@@ -181,29 +186,6 @@ def contrastStretch(pilImg):
     npImg = PILtoNumpy(pilImg)
     p30, p70 = np.percentile(npImg, (30, 70))
     return NumpytoPIL(exposure.rescale_intensity(npImg, in_range=(p30, p70)))
-    
-def getImg(filepath):
-    img=mpimg.imread(filepath)
-    print(type(img))
-    print("img array is originally %d bytes" % (img.nbytes))
-    return img
-
-def encode(img):
-    retval, buffer = cv2.imencode('.jpg', img)
-    jpg_as_text = base64.b64encode(buffer)
-    print('txt',sys.getsizeof(jpg_as_text))
-    return jpg_as_text
-
-def decode(jpg_as_text):
-    nparr = np.frombuffer(base64.b64decode(jpg_as_text), np.uint8)
-    print('nparr',nparr.nbytes)
-    return nparr
-
-def showImg(nparr):
-    img2 = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    imgplot = plt.imshow(img2)
-    plt.show() 
-
 
 root = tk.Tk()
 email = ''
