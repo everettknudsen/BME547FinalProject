@@ -15,9 +15,28 @@ import matplotlib.image as mpimg
 import numpy as np
 from skimage import exposure
 
+
 local_url = 'http://127.0.0.1:5000'
 
+def destroyWindow(window):
+    """Destroy the current screen, used to move between steps in GUI
+    
+    Args:
+        window (tk.Frame): window to be destroyed before next screen
+    """
+    window.destroy()
+    return
+
 def retrieve_email(entryBox, window):
+    """Get email string from login screen
+    
+    Args:
+        entryBox (tk.Entry): location of typed email
+        window (tk.Frame): window to be destroyed after pressing login
+    
+    Returns:
+        email (string): email of user for logging in to database
+    """
     emailBox = entryBox
     global email
     email = emailBox.get()
@@ -27,16 +46,16 @@ def retrieve_email(entryBox, window):
     # for download flow, used immediately to populate dropdown of images
     # requests.post(local_url+'/api/login', json=email)
     destroyWindow(window)
-    getLoadType()
-    return
+    mainMenuScreen()
+    return email
 
 
-def destroyWindow(window):
-    window.destroy()
-    return
+
 
 # ggets email and sends to server
-def getEmail():
+def loginScreen():
+    """First step/screen of GUI, prompts user for email to login
+    """
     root.title('Login Screen')
     content_email = tk.Frame(root)
     content_email.grid(column=0, row=0)
@@ -51,35 +70,62 @@ def getEmail():
     return
 
 def returnToLogin(loadWindow):
+    """Helper function for a button to return to login screen
+    
+    Args:
+        loadWindow (tk.Frame): window to be destroyed before moving to login
+    """
     destroyWindow(loadWindow)
-    getEmail()
+    loginScreen()
     return
 
 # this just lets user select upload or download. does not interact with server
-def getLoadType():
+def mainMenuScreen():
+    """Loads the main menu GUI. Options are to download, upload, or finish.
+    Also has a back button to return to login screen.
+    """
     root.title('Load Type')
-    content_loadType = tk.Frame(root)
-    content_loadType.grid(column=0, row=0)
+    content_mainMenu = tk.Frame(root)
+    content_mainMenu.grid(column=0, row=0)
     root.geometry('500x300')
-    instruction_lbl = tk.Label(content_loadType, text='Would you like to upload a photo(s) or download?')
+    instruction_lbl = tk.Label(content_mainMenu, text='Would you like to upload a photo(s) or download?')
     instruction_lbl.grid(column=2, row=1, pady=20)
-    upload_btn = tk.Button(content_loadType, text='Upload', command=lambda: uploadPressed(content_loadType))
+    upload_btn = tk.Button(content_mainMenu, text='Upload', command=lambda: uploadPressed(content_mainMenu))
     upload_btn.grid(column=2, row=3)
-    download_btn = tk.Button(content_loadType, text='Download', command="buttonpressed")
+    download_btn = tk.Button(content_mainMenu, text='Download', command="buttonpressed")
     download_btn.grid(column=3, row=3)
-    back_btn = tk.Button(content_loadType, text='Back to Login', command=lambda: returnToLogin(content_loadType), width=20)
+    back_btn = tk.Button(content_mainMenu, text='Back to Login', command=lambda: returnToLogin(content_mainMenu), width=20)
     # add padding for button
     back_btn.grid(column=3, row=4, pady=100)
     
     root.mainloop()
     return
 
-def uploadPressed(loadTypeWindow):
-    destroyWindow(loadTypeWindow)
+def uploadPressed(mainMenuWindow):
+    """Helper function for a button to move from Main Menu to Upload screen
+    
+    Args:
+        mainMenuWindow (tk.Frame): main menu window to be destroyed
+        before moving to login
+    """
+    destroyWindow(mainMenuWindow)
     uploadScreen()
     return
 
 def uploadScreen():
+    """Upload Screen for uploading photos.
+    
+    Contains a browse button that opens a native browsing window to select a
+    file for uploading. Once a photo is selected, it will display this photo
+    along with a default processing option version of the photo. The default is
+    'histogram equalization'. The user then has the option to change processing
+    type, and the changes will be reflected in the visible processed photo.
+    Once a final process format is selected, the user can then press 'upload'
+    to upload the photo and processed photo to the server. If no photo is
+    selected, an error message will appear. If successful, a success window
+    will appear, prompting the user to return to Main Menu, or give option to
+    upload another photo.
+    """
     root.title('Uploading')
     content_upload = tk.Frame(root)
     content_upload.grid(column=0, row=0)
@@ -125,6 +171,10 @@ def uploadScreen():
     back_btn.grid(column=4, row=6, pady=50)
     
     def load_img():
+        """Function called when 'browse' button is pressed. Opens a native
+        browsing window. It will load image as described in parent function,
+        uploadScreen().
+        """
         nonlocal fname
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*")))
@@ -154,23 +204,54 @@ def uploadScreen():
         return
     
     def returnToMenu_upload(uploadWindow):
+        """Helper function for a 'back' button to move from Upload screen to
+        Main Menu
+    
+        Args:
+            uploadWindow (tk.Frame): upload window to be destroyed before
+            moving to main menu
+        """
         destroyWindow(uploadWindow)
-        getLoadType()
+        mainMenuScreen()
         return
 
     
     def returnToMenu_uploadSuccess(successWindow, uploadWindow):
+        """Helper function for a 'return to main menu' button to move from
+        Upload success screen to Main Menu
+    
+        Args:
+            uploadWindow (tk.Frame): upload window to be destroyed before
+            moving to main menu
+            successWindow (tk.Frame): success window to be destroyed before
+            moving to main menu
+        """
         destroyWindow(successWindow)
         destroyWindow(uploadWindow)
-        getLoadType()
+        mainMenuScreen()
         return
     
     def returnToUpload_uploadSuccess(successWindow):
+        """Helper function for a button to move back from upload success
+        screen to Upload screen. Preserves previously selected image, but
+        allows new images to be selected.
+    
+        Args:
+            successWindow (tk.Frame): success window to be destroyed before
+            moving to back to upload window
+        """
         destroyWindow(successWindow)
         
         return
     
     def submit_img(uploadWindow):
+        """Function carried out on button press of 'upload'. POSTs image data
+        to server and opens a success window
+        
+        Args:
+            uploadWindow (tk.Frame): upload window to either destroy or return
+            to depending on user action after upload
+        """
         if selectedPhoto:
             print('submitting')
             # POST username, image and imgProcessed, and timestamp, latency
@@ -192,6 +273,11 @@ def uploadScreen():
 
     
     def updateProcessed():
+        """Command for radioButton of photo processing options. Uses nonlocal
+        'process' (which is changed by the currently active radioButton) and
+        nonlocal 'fname' which selects the image to be processed based on
+        'browse' button.
+        """
         nonlocal process
         nonlocal fname
         
@@ -217,28 +303,50 @@ def uploadScreen():
         return
     
     root.mainloop()
-    return
+    return  # finishes uploadScreen() function
 
-# follow files are for image reading and showing and encoding
+
 def PILtoNumpy(pilImg):
+    """Helper function to convert a PIL image format to numpy.ndarray for
+    processing.
+    
+    Args:
+        pilImg (PIL Image format image): the image to be converted
+    """
     return np.array(pilImg)
 
 def NumpytoPIL(npImg):
+    """Helper function to convert numpy.ndarray formatted image to PIL format
+    for processing.
+    
+    Args:
+        npImg (numpy.ndarray): the image to be converted
+    """
     rescale_out = exposure.rescale_intensity(npImg, out_range=(0, 255))
     return Image.fromarray(rescale_out.astype('uint8'))
 
 def histEQ(pilImg):
+    """Does histogram equalization processing on a photo
+    
+    Args:
+        pilImg (PIL Image format image): Image to be processed
+    """
     npImg = PILtoNumpy(pilImg)
     return NumpytoPIL(exposure.equalize_hist(npImg))
 
 def contrastStretch(pilImg):
+    """Does contrast stretch processing on a photo with percentiles 30 and 70
+    
+    Args:
+        pilImg (PIL Image format image): Image to be processed
+    """
     npImg = PILtoNumpy(pilImg)
     p30, p70 = np.percentile(npImg, (30, 70))
     return NumpytoPIL(exposure.rescale_intensity(npImg, in_range=(p30, p70)))
 
 root = tk.Tk()
 email = ''
-getEmail()
+loginScreen()
 
 
 # uncomment following block of code to prove that contrast stretch and 
