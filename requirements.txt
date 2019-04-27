@@ -13,3 +13,4 @@ pymongo
 tqdm
 python-dateutil
 matplotlib
+sphinx
