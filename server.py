@@ -71,37 +71,6 @@ def post_choose_method():
     :return:
     """
     im, im_name, method = request.get_json()
-    im_p, im_name_p = process_image(
-        im_name, im,
-        method='Histogram equalization'
-    )
-    return jsonify(im_p)
-
-
-def process_image(im, im_name, method):
-    """Processes image according to chosen method
-
-    :param im_name: title of image to be processed
-    :param im: image to be processed
-    :param method: desired method of image processing
-    :return:
-    """
-    if method is 'Contrast stretching':
-        tag = 'cs'
-        p2, p98 = np.percentile(im, (2, 98))
-        im_p = exposure.rescale_intensity(im)
-    elif method is 'Log compression':
-        tag = 'lc'
-        im_p = []
-    elif method is 'Reverse video':
-        tag = 'rv'
-        im_p = []
-    else:
-        tag = 'he'
-        im_p = exposure.equalize_hist(im)
-    im_name_p = im_name + '_' + tag
-    # image name tagged with processing method
-    return im_p, im_name_p
 
 
 class NotEmail(Exception):
