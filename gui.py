@@ -6,17 +6,19 @@ Created on Thu Apr 25 20:15:05 2019
 """
 
 import tkinter as tk
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror
 from PIL import Image, ImageTk
 import base64
+import os
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 from skimage import exposure
 
-
+global email
 local_url = 'http://127.0.0.1:5000'
+
 
 def destroyWindow(window):
     """Destroy the current screen, used to move between steps in GUI
@@ -26,6 +28,7 @@ def destroyWindow(window):
     """
     window.destroy()
     return
+
 
 def retrieve_email(entryBox, window):
     """Get email string from login screen
@@ -50,9 +53,6 @@ def retrieve_email(entryBox, window):
     return email
 
 
-
-
-# ggets email and sends to server
 def loginScreen():
     """First step/screen of GUI, prompts user for email to login
     """
@@ -60,14 +60,18 @@ def loginScreen():
     content_email = tk.Frame(root)
     content_email.grid(column=0, row=0)
     root.geometry('500x300')
+    welcome_lbl = tk.Label(content_email, text='Welcome!')
+    welcome_lbl.grid(column=0, row=1, columnspan=2, pady=10, padx=60)
+    welcome_lbl.config(font=("Courier", 44))
     instruction_lbl = tk.Label(content_email, text='Please enter your email.')
-    instruction_lbl.grid(column=1, row=1)
+    instruction_lbl.grid(column=0, row=2, columnspan=2, pady=10, padx=190)
     emailBox= tk.Entry(content_email)
-    emailBox.grid(column=2, row=2)
+    emailBox.grid(column=0, row=3, columnspan=2)
     submit_btn = tk.Button(content_email, text='Submit Email', command=lambda: retrieve_email(emailBox, content_email))
-    submit_btn.grid(column=2, row=3)
+    submit_btn.grid(column=0, row=4, columnspan=2, pady=10, padx=190)
     root.mainloop()
     return
+
 
 def returnToLogin(loadWindow):
     """Helper function for a button to return to login screen
@@ -79,7 +83,7 @@ def returnToLogin(loadWindow):
     loginScreen()
     return
 
-# this just lets user select upload or download. does not interact with server
+
 def mainMenuScreen():
     """Loads the main menu GUI. Options are to download, upload, or finish.
     Also has a back button to return to login screen.
@@ -89,28 +93,30 @@ def mainMenuScreen():
     content_mainMenu.grid(column=0, row=0)
     root.geometry('500x300')
     instruction_lbl = tk.Label(content_mainMenu, text='Would you like to upload a photo(s) or download?')
-    instruction_lbl.grid(column=2, row=1, pady=20)
+    instruction_lbl.grid(column=0, row=0, pady=30, columnspan=4, padx=120)
     upload_btn = tk.Button(content_mainMenu, text='Upload', command=lambda: uploadPressed(content_mainMenu))
-    upload_btn.grid(column=2, row=3)
-    download_btn = tk.Button(content_mainMenu, text='Download', command="buttonpressed")
-    download_btn.grid(column=3, row=3)
-    back_btn = tk.Button(content_mainMenu, text='Back to Login', command=lambda: returnToLogin(content_mainMenu), width=20)
+    upload_btn.grid(column=1, row=2)
+    download_btn = tk.Button(content_mainMenu, text='Download', command=lambda: downloadPressed(content_mainMenu))
+    download_btn.grid(column=2, row=2)
+    back_btn = tk.Button(content_mainMenu, text='Back to Login', command=lambda: returnToLogin(content_mainMenu))
     # add padding for button
-    back_btn.grid(column=3, row=4, pady=100)
+    back_btn.grid(column=2, row=4, pady=100)
     
     root.mainloop()
     return
+
 
 def uploadPressed(mainMenuWindow):
     """Helper function for a button to move from Main Menu to Upload screen
     
     Args:
         mainMenuWindow (tk.Frame): main menu window to be destroyed
-        before moving to login
+        before moving to uploadScreen()
     """
     destroyWindow(mainMenuWindow)
     uploadScreen()
     return
+
 
 def uploadScreen():
     """Upload Screen for uploading photos.
@@ -169,7 +175,8 @@ def uploadScreen():
     
     back_btn = tk.Button(content_upload, text='Back', command=lambda: returnToMenu_upload(content_upload), width=20)
     back_btn.grid(column=4, row=6, pady=50)
-    
+
+
     def load_img():
         """Function called when 'browse' button is pressed. Opens a native
         browsing window. It will load image as described in parent function,
@@ -178,6 +185,7 @@ def uploadScreen():
         nonlocal fname
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*")))
+        
         if fname.lower().endswith(('.jpeg','.jpg','.tiff','.tif','.png')):
             try:
                 img = Image.open(fname)
@@ -203,6 +211,8 @@ def uploadScreen():
             print(fname.lower(), "is not a valid photo file")
         return
     
+
+
     def returnToMenu_upload(uploadWindow):
         """Helper function for a 'back' button to move from Upload screen to
         Main Menu
@@ -231,6 +241,7 @@ def uploadScreen():
         mainMenuScreen()
         return
     
+    
     def returnToUpload_uploadSuccess(successWindow):
         """Helper function for a button to move back from upload success
         screen to Upload screen. Preserves previously selected image, but
@@ -243,6 +254,7 @@ def uploadScreen():
         destroyWindow(successWindow)
         
         return
+    
     
     def submit_img(uploadWindow):
         """Function carried out on button press of 'upload'. POSTs image data
@@ -306,6 +318,125 @@ def uploadScreen():
     return  # finishes uploadScreen() function
 
 
+def downloadPressed(mainMenuWindow):
+    """Helper function for a button to move from Main Menu to download screen
+    
+    Args:
+        mainMenuWindow (tk.Frame): main menu window to be destroyed
+        before moving to downloadScreen()
+    """
+    destroyWindow(mainMenuWindow)
+    downloadScreen()
+    return
+
+
+def downloadScreen():
+    # carry out a GET request based on username to get list of photo originals
+    root.title('Downloading')
+    content_download = tk.Frame(root)
+    content_download.grid(column=0, row=0)
+    root.geometry('700x300')
+    
+    
+    instruction_lbl = tk.Label(content_download, text='Choose a uploaded photo')
+    instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
+
+    # populate a dictionary with image choices
+    choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
+    imageName_normal = tk.StringVar()
+    imageName_normal.set('select image')  # set default option
+    
+    # create dropdown menu
+    imageMenu = tk.OptionMenu(content_download, imageName_normal, *choices, command=lambda _: processedOptions())
+    imageMenu.grid(column=1, row=0, pady=10)
+    
+   
+    
+    
+    # create a back button
+    back_btn = tk.Button(content_download, text='Back to Menu', command=lambda: returnToMenu_download(content_download), width=20)
+    # add padding for button
+    back_btn.grid(column=0, row=5, pady=30)
+    
+    # when dropdown value changes, do this
+    def change_dropdown(*args):        
+        """Function called when dropdown of image is changed. Displays the
+        image.
+        """
+        nonlocal imageName_normal
+        dirPath = 'C:/Users/wainw/Pictures/'
+        filename = imageName_normal.get()
+        fname = dirPath + filename
+        try:
+            img = Image.open(fname)
+            w, h = img.size
+            resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+            imgTk = ImageTk.PhotoImage(resized) 
+            showDownload = tk.Label(content_download, image=imgTk)
+            showDownload.image = imgTk
+            showDownload.grid(column=0, row=1, columnspan=2, rowspan=2)
+             # create download buttons
+            download_btn_1 = tk.Button(content_download, text='Download Original', command=lambda: downloadOrig(content_download, img, filename), width=20)
+            download_btn_1.grid(column=0, row=3, pady=10)
+        except:                     # <- naked except is a bad idea
+            showerror("Open Source File", "Failed to read file\n'%s'" % fname)
+        return
+    
+    # link function to change dropdown
+    imageName_normal.trace('w', change_dropdown)
+    
+    def downloadOrig(downloadWindow, img, filename):
+        # nameNoExt = os.path.splitext(imageName_normal.get())[0]
+        # ext = os.path.splitext(imageName_normal.get())[1]
+        print("downloading original to local")
+        saveDir = askdirectory()
+        img.save(saveDir+'/'+filename)
+        return
+    
+    def processedOptions():
+        nonlocal imageName_normal
+        nameNoExt = os.path.splitext(imageName_normal.get())[0]
+        ext = os.path.splitext(imageName_normal.get())[1]
+        # find in list of user photos key.lower().startswith('imageName_normal')
+        # use this sublist to populate choicesProcessed dictionary
+        
+        # secondary dropdown that populates once normal image selected
+        # get all images names that start with imageName_normal
+        choicesProcessed = {nameNoExt+'_he'+ext, nameNoExt+'_cs'+ext}
+        imageName_processed = tk.StringVar()
+        imageName_processed.set(nameNoExt+'_he'+ext)  # set default option
+        
+        #give further instructions
+        instruction_lbl2 = tk.Label(content_download, text='Compare to a processed version')
+        instruction_lbl2.grid(column=2, row=0, padx=20, pady=10)
+        # create dropdown menu
+        processedMenu = tk.OptionMenu(content_download, imageName_processed, *choicesProcessed)
+        processedMenu.grid(column=3, row=0, pady=10)
+        
+        # when dropdown value changes, do this
+        def change_dropdownProcessed(*args):
+            print(imageName_processed.get())
+        
+        # link function to change dropdown
+        imageName_processed.trace('w', change_dropdownProcessed)
+        return
+    
+    def returnToMenu_download(downloadWindow):
+        """Helper function for a 'back' button to move from Download screen to
+        Main Menu
+    
+        Args:
+            downloadWindow (tk.Frame): download window to be destroyed before
+            moving to main menu
+        """
+        destroyWindow(downloadWindow)
+        mainMenuScreen()
+        return
+    
+    root.mainloop()
+    return
+
+
 def PILtoNumpy(pilImg):
     """Helper function to convert a PIL image format to numpy.ndarray for
     processing.
@@ -314,6 +445,7 @@ def PILtoNumpy(pilImg):
         pilImg (PIL Image format image): the image to be converted
     """
     return np.array(pilImg)
+
 
 def NumpytoPIL(npImg):
     """Helper function to convert numpy.ndarray formatted image to PIL format
@@ -325,6 +457,7 @@ def NumpytoPIL(npImg):
     rescale_out = exposure.rescale_intensity(npImg, out_range=(0, 255))
     return Image.fromarray(rescale_out.astype('uint8'))
 
+
 def histEQ(pilImg):
     """Does histogram equalization processing on a photo
     
@@ -333,6 +466,7 @@ def histEQ(pilImg):
     """
     npImg = PILtoNumpy(pilImg)
     return NumpytoPIL(exposure.equalize_hist(npImg))
+
 
 def contrastStretch(pilImg):
     """Does contrast stretch processing on a photo with percentiles 30 and 70
@@ -343,6 +477,7 @@ def contrastStretch(pilImg):
     npImg = PILtoNumpy(pilImg)
     p30, p70 = np.percentile(npImg, (30, 70))
     return NumpytoPIL(exposure.rescale_intensity(npImg, in_range=(p30, p70)))
+
 
 root = tk.Tk()
 email = ''
