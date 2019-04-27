@@ -8,7 +8,8 @@ connect("mongodb+srv://bme_547_final_project:bme_547_final_project"
 
 class UserImages(MongoModel):
     """
-    This is a class which initializes the data fields which will then be used to store
+    This is a class which initializes the data
+    fields which will then be used to store
     all data in the MongoDB database.
 
     """
@@ -16,6 +17,8 @@ class UserImages(MongoModel):
     original_images = fields.ListField()
     he_images = fields.ListField()
     cs_images = fields.ListField()
+    log_images = fields.ListField()
+    rev_images = fields.ListField()
     he_count = fields.IntegerField()
     cs_count = fields.IntegerField()
     log_count = fields.IntegerField()
@@ -25,7 +28,8 @@ class UserImages(MongoModel):
 
 def add_new_user(email):
     """
-    This function initializes a user in the image database before any
+    This function initializes a user in
+    the image database before any
     images are uploaded.
     :param email: Email argument input into the GUI
     :return:
@@ -37,3 +41,24 @@ def add_new_user(email):
                       rev_count=0
                       )
     user.save()
+
+
+def get_user_data(email):
+    try:
+        user = UserImages.objects.raw({"_id": email}).first()
+        user_dict = {
+            'original_images': user.original_images,
+            'he_images': user.he_images,
+            'cs_images': user.cs_images,
+            'log_images': user.log_images,
+            'rev_images': user.rev_images,
+            'he_count': user.he_count,
+            'cs_count': user.cs_count,
+            'log_count': user.log_count,
+            'rev_count': user.rev_count,
+            'user_actions': user.user_actions,
+        }
+    except UserImages.DoesNotExist:
+        user_data = "The user does not exist! " \
+                    "Go back and register user!"
+        return 200
