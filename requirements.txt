@@ -5,6 +5,7 @@ request
 requests
 datetime
 numpy
+scipy
 scikit-image
 pymodm
 dnspython

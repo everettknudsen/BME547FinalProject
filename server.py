@@ -1,16 +1,16 @@
 # from pymodm import connect
 from flask import Flask, jsonify, request
-
+from PIL import Image
 from datetime import datetime
 import logging
 
+import base64
+import pickle
+import sys
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-
-# global variables
-im = []
 
 app = Flask(__name__)
 
@@ -31,40 +31,40 @@ def post_login():
     Args:
 
     Returns:
+        email
     """
     email = request.get_json()
     is_email(email)
-
     # for user in User.objects.raw({}):
     # view database or upload new image
     return jsonify(email)
 
 
-@app.route('/api/<user>/post_new_image', methods=['POST'])
-def post_new_image(user):
-    """Uploads new image to database
+@app.route('/api/<email>/post_new_image', methods=['POST'])
+def post_new_image(email):
+    """Uploads normal image, processed image, timestamp,
+    process latency
 
     Args:
-        user (str): user email (primary key)
+        email (str): user email (primary key)
 
     Returns:
     """
-    user = []
-    img = request.get_json()
-    # decode image
+    print(email)
+    submit_img_json = request.get_json()
+    img = submit_img_json['img']
+    processedImg = submit_img_json['processedImg']
 
-    # for user in User.objects.raw({}):
-    # assign image to user database
-    # return jsonify(img)
+    return jsonify(img, processedImg)
 
 
-@app.route('/api/<user>/get_image_list', methods=['GET'])
-def get_image_list(user):
+@app.route('/api/<email>/get_image_list', methods=['GET'])
+def get_image_list(email):
     """Obtains list of non-processed image titles from database
     for use in dropdown menu
 
     Args:
-        user (str): user email (primary key)
+        email (str): user email (primary key)
 
     Returns:
         image_list (list): list of unprocessed image  titles
@@ -88,8 +88,8 @@ def pull_image_list(image_dict):
     return image_list
 
 
-@app.route('/api/<user>/<img_name>/get_image', methods=['GET'])
-def get_image(user, img_name):
+@app.route('/api/<email>/<img_name>/get_image', methods=['GET'])
+def get_image(email, img_name):
     """Pulls up image name and data when chosen from dropdown menu
 
     Args:
@@ -98,7 +98,7 @@ def get_image(user, img_name):
 
     Returns:
     """
-    img_data, metrics = pull_image(user, img_name)
+    img_data, metrics = pull_image(email, img_name)
     return jsonify(img_name, img_data, metrics)
 
 
@@ -119,17 +119,17 @@ def pull_image(img_name):
     return img_data, metrics
 
 
-@app.route('/api/<user>/<process>/get_process_type', methods=['GET'])
-def get_process_count(user, process):
-    count = calc_process_count(user, process)
+@app.route('/api/<email>/<process>/get_process_type', methods=['GET'])
+def get_process_count(email, process):
+    count = calc_process_count(email, process)
     return jsonify(count)
 
 
-def calc_process_count(user, process):
+def calc_process_count(email, process):
     """Determines how many times a user has applied a certain process
 
     Args:
-        user (str): user email (primary key)
+        email (str): user email (primary key)
         process (str): desired processing types
 
     Returns:
@@ -142,18 +142,18 @@ def calc_process_count(user, process):
     return count
 
 
-@app.route('/api/get_all_user_metrics/<user>', methods=['GET'])
+@app.route('/api/<email>/get_all_user_metrics', methods=['GET'])
 def get_all_user_metrics(user):
     all_metrics = pull_all_metrics(user)
     return jsonify(all_metrics)
 
 
-def pull_all_metrics(user):
+def pull_all_metrics(email):
     """Obtains list of timestamps/corresponding
     processes for a user
 
     Args:
-        user (str): user email (primary key)
+        email (str): user email (primary key)
 
     Returns:
         all_metrics
@@ -204,6 +204,12 @@ def is_email(x):
     else:
         message_400 = 'Please enter a valid email address.'
         raise NotEmail(message_400, status_code=400)
+
+
+def str2im(img):
+    img = base64.b64decode(img)
+    img = pickle.loads(img)
+    return img
 
 
 if __name__ == '__main__':
