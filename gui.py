@@ -110,8 +110,8 @@ def uploadPressed(loadTypeWindow):
     def load_img():
         nonlocal fname
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
-                                           ("All files", "*.*") ))
-        if fname:
+                                           ("All files", "*.*")))
+        if fname.lower().endswith(('.jpeg','.jpg','.tiff','.tif','.png')):
             try:
                 img = Image.open(fname)
                 w, h = img.size
@@ -132,7 +132,9 @@ def uploadPressed(loadTypeWindow):
                 showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read file\n'%s'" % fname)
-            return
+        else:
+            print(fname.lower(), "is not a valid photo file")
+        return
     
     def submit_img():
         if selectedPhoto:
