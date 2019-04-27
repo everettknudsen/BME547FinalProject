@@ -17,7 +17,7 @@ from skimage import exposure
 
 local_url = 'http://127.0.0.1:5000'
 
-def retrieve_email(lbl, entryBox, btn):
+def retrieve_email(entryBox, window):
     emailBox = entryBox
     global email
     email = emailBox.get()
@@ -26,51 +26,48 @@ def retrieve_email(lbl, entryBox, btn):
     # for upload flow, not used until image is uploaded
     # for download flow, used immediately to populate dropdown of images
     # requests.post(local_url+'/api/login', json=email)
-    destroyEmail(lbl, entryBox, btn)
+    destroyWindow(window)
     getLoadType()
+    return
 
+
+def destroyWindow(window):
+    window.destroy()
+    return
 
 # ggets email and sends to server
 def getEmail():
     root.title('Login Screen')
-    content_email = tk.Frame(root).grid(column=0, row=0)
+    content_email = tk.Frame(root)
+    content_email.grid(column=0, row=0)
     root.geometry('500x300')
     instruction_lbl = tk.Label(content_email, text='Please enter your email.')
     instruction_lbl.grid(column=1, row=1)
     emailBox= tk.Entry(content_email)
     emailBox.grid(column=2, row=2)
-    submit_btn = tk.Button(content_email, text='Submit Email', command=lambda: retrieve_email(instruction_lbl, emailBox, submit_btn))
+    submit_btn = tk.Button(content_email, text='Submit Email', command=lambda: retrieve_email(emailBox, content_email))
     submit_btn.grid(column=2, row=3)
     root.mainloop()
-
-
-def destroyEmail(lbl, box, btn):
-    lbl.destroy()
-    box.destroy()
-    btn.destroy()
+    return
 
 # this just lets user select upload or download. does not interact with server
 def getLoadType():
     root.title('Load Type')
-    content_loadType = tk.Frame(root).grid(column=0, row=0)
+    content_loadType = tk.Frame(root)
+    content_loadType.grid(column=0, row=0)
     root.geometry('500x300')
     instruction_lbl = tk.Label(content_loadType, text='Would you like to upload a photo(s) or download?')
     instruction_lbl.grid(column=2, row=1)
-    upload_btn = tk.Button(content_loadType, text='Upload', command=lambda: uploadPressed(instruction_lbl, upload_btn, download_btn))
+    upload_btn = tk.Button(content_loadType, text='Upload', command=lambda: uploadPressed(content_loadType))
     upload_btn.grid(column=2, row=3)
     download_btn = tk.Button(content_loadType, text='Download', command="buttonpressed")
     download_btn.grid(column=3, row=3)
     root.mainloop()
+    return
 
 
-def destroyLoadType(lbl, up, down):
-    lbl.destroy()
-    up.destroy()
-    down.destroy()
-
-
-def uploadPressed(lbl, btn1, btn2):    
-    destroyLoadType(lbl, btn1, btn2)
+def uploadPressed(loadTypeWindow):
+    destroyWindow(loadTypeWindow)
     root.title('Uploading')
     content_upload = tk.Frame(root).grid(column=0, row=0)
     root.geometry('500x300')
@@ -140,6 +137,17 @@ def uploadPressed(lbl, btn1, btn2):
     def submit_img():
         if selectedPhoto:
             print('submitting')
+            # POST username, image and imgProcessed, and timestamp, latency
+            submitSuccess = tk.Tk()
+            submitSuccess.geometry("150x150") # (optional)    
+            lbl = tk.Label(submitSuccess, text='Successfully Submitted Photo')
+            lbl.grid(column=0, row=0, columnspan=2)
+            lbl2 = tk.Button(submitSuccess, text='Return to Main Menu', command=lambda: returnToMain_upload(), width=20)
+            lbl2.grid(column=0, row=1)
+            lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or Process', command=lambda: returnToMain_upload(), width=30)
+            lbl3.grid(column=1, row=1)
+            
+            submitSuccess.mainloop()
         else:
             print('havent chosen photo')
         return
@@ -171,6 +179,7 @@ def uploadPressed(lbl, btn1, btn2):
         return
     
     root.mainloop()
+    return
 
 # follow files are for image reading and showing and encoding
 def PILtoNumpy(pilImg):
