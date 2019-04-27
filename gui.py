@@ -65,11 +65,15 @@ def getLoadType():
     root.mainloop()
     return
 
-
 def uploadPressed(loadTypeWindow):
     destroyWindow(loadTypeWindow)
+    uploadScreen()
+    return
+
+def uploadScreen():
     root.title('Uploading')
-    content_upload = tk.Frame(root).grid(column=0, row=0)
+    content_upload = tk.Frame(root)
+    content_upload.grid(column=0, row=0)
     root.geometry('500x300')
     instruction_lbl = tk.Label(content_upload, text='Choose a photo')
     instruction_lbl.grid(column=0, row=0)
@@ -79,7 +83,7 @@ def uploadPressed(loadTypeWindow):
     browse_btn.grid(column=1, row=0)
 
     # create upload button
-    upload_btn = tk.Button(content_upload, text="Upload", command=lambda: submit_img(), width=10)
+    upload_btn = tk.Button(content_upload, text="Upload", command=lambda: submit_img(content_upload), width=10)
     upload_btn.grid(column=3, row=0)
 
     # set slectedPhoto to False because no photo selected at this point
@@ -136,18 +140,29 @@ def uploadPressed(loadTypeWindow):
             print(fname.lower(), "is not a valid photo file")
         return
     
-    def submit_img():
+    def returnToMenu_uploadSuccess(successWindow, uploadWindow):
+        destroyWindow(successWindow)
+        destroyWindow(uploadWindow)
+        getLoadType()
+        return
+    
+    def returnToUpload_uploadSuccess(successWindow):
+        destroyWindow(successWindow)
+        return
+    
+    def submit_img(uploadWindow):
         if selectedPhoto:
             print('submitting')
             # POST username, image and imgProcessed, and timestamp, latency
             submitSuccess = tk.Tk()
-            submitSuccess.geometry("150x150") # (optional)    
+            submitSuccess.geometry("300x150") # (optional)    
             lbl = tk.Label(submitSuccess, text='Successfully Submitted Photo')
             lbl.grid(column=0, row=0, columnspan=2)
-            lbl2 = tk.Button(submitSuccess, text='Return to Main Menu', command=lambda: returnToMain_upload(), width=20)
+            lbl2 = tk.Button(submitSuccess, text='Return to Main Menu', command=lambda: returnToMenu_uploadSuccess(submitSuccess, uploadWindow), width=30)
             lbl2.grid(column=0, row=1)
-            lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or Process', command=lambda: returnToMain_upload(), width=30)
+            lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or Process', command=lambda: returnToUpload_uploadSuccess(submitSuccess), width=30)
             lbl3.grid(column=1, row=1)
+            
             
             submitSuccess.mainloop()
         else:
