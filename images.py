@@ -1,9 +1,11 @@
-from pymodm import connect, MongoModel, fields, EmbeddedMongoModel
-from users import User
-from datetime import datetime
+import mongoengine
+import datetime
 
-connect("mongodb+srv://bme_547_final_project:bme_547_final_project@"
-        "bme547finalproject-gjnxe.mongodb.net/test?retryWrites=true")
 
-class Images(EmbeddedMongoModel):
-    user = fields.ReferenceField(User)
+class Image(mongoengine.EmbeddedDocument):
+    file_name = mongoengine.StringField(primary_key=True, required=True)
+    image_data = None
+    meta = {
+        'db_alias': 'core',
+        'collection': 'users'
+    }

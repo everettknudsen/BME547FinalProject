@@ -1,11 +1,15 @@
-from pymodm import connect, MongoModel, fields
-from datetime import datetime
+import mongoengine
+import datetime
+
+from images import Image
 
 
-def init_mongo_db():
-    connect("mongodb+srv://bme_547_final_project:bme_547_final_project@bme547finalproject-gjnxe.mongodb.net/test?retryWrites=true")
+class User(mongoengine.Document):
+    email = mongoengine.EmailField(primary_key=True, required=True)
+    registered_date = mongoengine.DateTimeField(default=datetime.datetime.now)
+    images = mongoengine.EmbeddedDocumentListField(Image)
 
-
-class User(MongoModel):
-    email = fields.EmailField(primary_key=True, required=True)
-    images = fields.EmbeddedDocumentListField()
+    meta = {
+        'db_alias': 'core',
+        'collection': 'users'
+    }
