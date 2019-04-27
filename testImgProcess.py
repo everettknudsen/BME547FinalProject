@@ -14,11 +14,12 @@ import sys
 from PIL import Image, ImageTk
 import tkinter as tk
 from skimage import exposure
+import os
 
 filepath = 'C:/Users/wainw/Pictures/GroupMe/bo.jpeg'
 savepath = 'C:/Users/wainw/Pictures/pass.jpg'
 
-
+"""
 filepath = 'C:/Users/wainw/Pictures/pass.jpg'
 img1 = Image.open(filepath)
 img1 = np.array(img1)
@@ -44,5 +45,7 @@ fig3 = plt.figure()
 logg = np.log(img1)
 logc = exposure.rescale_intensity(logg, out_range=(0, 255))
 plt.imshow(logg.astype('uint8'))
+"""
 
+print(os.path.splitext(filepath)[0])
 
