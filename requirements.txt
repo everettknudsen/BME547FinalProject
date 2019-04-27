@@ -8,4 +8,8 @@ numpy
 scikit-image
 pymodm
 dnspython
+mongoengine
+pymongo
+tqdm
+python-dateutil
 matplotlib
