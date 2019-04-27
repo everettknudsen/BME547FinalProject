@@ -121,11 +121,11 @@ def pull_image(img_name):
 
 @app.route('/api/<user>/<process>/get_process_type', methods=['GET'])
 def get_process_count(user, process):
-    count = process_count(user, process)
+    count = calc_process_count(user, process)
     return jsonify(count)
 
 
-def process_count(user, process):
+def calc_process_count(user, process):
     """Determines how many times a user has applied a certain process
 
     Args:
@@ -144,14 +144,24 @@ def process_count(user, process):
 
 @app.route('/api/get_all_user_metrics/<user>', methods=['GET'])
 def get_all_user_metrics(user):
-    metrics = all_user_metrics(user)
-    return jsonify(metrics)
+    all_metrics = pull_all_metrics(user)
+    return jsonify(all_metrics)
 
 
-def all_user_metrics(user):
+def pull_all_metrics(user):
+    """Obtains list of timestamps/corresponding
+    processes for a user
+
+    Args:
+        user (str): user email (primary key)
+
+    Returns:
+        all_metrics
+    """
     # check database
     # print list of timestamps/actions
-    return metrics
+    all_metrics = []
+    return all_metrics
 
 
 class NotEmail(Exception):
