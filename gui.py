@@ -325,18 +325,13 @@ def uploadScreen():
             img_name = os.path.basename(fname)
             nameNoExt = os.path.splitext(img_name)[0]
             ext = os.path.splitext(img_name)[1]
-            img_name_processed = nameNoExt + '_' + process.get() + ext
+            # img_name_processed = nameNoExt + '_' + process.get() + ext
             
             print(sys.getsizeof(im2str(img)))
             serialDate = json_serial_date(datetime.datetime.now())
             upload_package = {'img_name': img_name, 'img_data': im2str(img),
                               'img_size': (w, h),
-                              'img_name_processed': img_name_processed,
-                              'img_data_processed': im2str(processedImg),
-                              'img_size_processed': (w2, h2),
-                              'process_type': process.get(),
-                              'timestamp': serialDate,
-                              'latency': latency}
+                              'timestamp': serialDate}
             print('\n\n\n\n dictionary size '+str(sys.getsizeof(upload_package))+'\n\n\n\n')
             r = requests.post(local_url+'/api/'+email+'/post_new_image',
                                  json=upload_package)
@@ -437,7 +432,7 @@ def downloadScreen():
     # create a back button
     back_btn = tk.Button(content_download, text='Back to Menu', width=20,
                          command=lambda:
-                             returnToMenu_download(content_download)
+                             returnToMenu_download(content_download))
     # add padding for button
     back_btn.grid(column=0, row=5, pady=30)
 
@@ -469,7 +464,7 @@ def downloadScreen():
                                                               'Original',
                                        width=20, command=lambda:
                                            downloadOrig(content_download,
-                                                        img, filename)
+                                                        img, filename))
             download_btn_1.grid(column=0, row=3, pady=10)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % fname)
