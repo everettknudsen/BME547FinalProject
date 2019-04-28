@@ -13,6 +13,7 @@ from PIL import Image, ImageTk
 import pickle
 import base64
 import os
+import sys
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
@@ -67,7 +68,6 @@ def destroyWindow(window):
         window (tk.Frame): window to be destroyed before next screen
     """
     window.destroy()
-    return
 
 
 def retrieve_email(entryBox, window):
@@ -112,7 +112,6 @@ def loginScreen():
                                                           content_email))
     submit_btn.grid(column=0, row=4, columnspan=2, pady=10, padx=190)
     root.mainloop()
-    return
 
 
 def returnToLogin(loadWindow):
@@ -123,7 +122,6 @@ def returnToLogin(loadWindow):
     """
     destroyWindow(loadWindow)
     loginScreen()
-    return
 
 
 def mainMenuScreen():
@@ -149,7 +147,6 @@ def mainMenuScreen():
     # add padding for button
     back_btn.grid(column=2, row=4, pady=100)
     root.mainloop()
-    return
 
 
 def uploadPressed(mainMenuWindow):
@@ -161,7 +158,6 @@ def uploadPressed(mainMenuWindow):
     """
     destroyWindow(mainMenuWindow)
     uploadScreen()
-    return
 
 
 def uploadScreen():
@@ -273,7 +269,6 @@ def uploadScreen():
                           "Failed to read file\n'%s'" % fname)
         else:
             print(fname.lower(), "is not a valid photo file")
-        return
 
     def returnToMenu_upload(uploadWindow):
         """Helper function for a 'back' button to move from Upload screen to
@@ -283,9 +278,10 @@ def uploadScreen():
             uploadWindow (tk.Frame): upload window to be destroyed before
             moving to main menu
         """
+        print("doing")
         destroyWindow(uploadWindow)
+        print("done")
         mainMenuScreen()
-        return
 
     def returnToMenu_uploadSucc(successWindow, uploadWindow):
         """Helper function for a 'return to main menu' button to move from
@@ -297,10 +293,11 @@ def uploadScreen():
             successWindow (tk.Frame): success window to be destroyed before
             moving to main menu
         """
+        print("doing")
         destroyWindow(successWindow)
         destroyWindow(uploadWindow)
+        print("done")
         mainMenuScreen()
-        return
 
     def returnToUpload_uploadSucc(successWindow):
         """Helper function for a button to move back from upload success
@@ -312,7 +309,6 @@ def uploadScreen():
             moving to back to upload window
         """
         destroyWindow(successWindow)
-        return
 
     def submit_img(uploadWindow):
         """Function carried out on button press of 'upload'. POSTs image data
@@ -328,43 +324,56 @@ def uploadScreen():
             # POST username, image and imgProcessed, and timestamp, latency
 
             img_name = os.path.basename(fname)
-            nameNoExt = os.path.splitext(img_name)[0]
-            ext = os.path.splitext(img_name)[1]
-            img_name_processed = nameNoExt + '_' + process.get() + ext
+            # nameNoExt = os.path.splitext(img_name)[0]
+            # ext = os.path.splitext(img_name)[1]
+            # img_name_processed = nameNoExt + '_' + process.get() + ext
 
+            print(np.asarray(img).nbytes)
+            # create normal package
+            print(sys.getsizeof(im2str(img)))
             serialDate = json_serial_date(datetime.datetime.now())
             upload_package = {'img_name': img_name, 'img_data': im2str(img),
                               'img_size': (w, h),
-                              'img_name_processed': img_name_processed,
-                              'img_data_processed': im2str(processedImg),
-                              'img_size_processed': (w2, h2),
-                              'process_type': process.get(),
-                              'timestamp': serialDate,
-                              'latency': latency}
-            m, c = requests.post((local_url+'/api/'+email+'/post_new_image'),
-                                 json=upload_package)
-            if c != 201:
+                              'timestamp': serialDate}
+
+            r = requests.post(local_url+'/api/'+email+'/post_new_image',
+                              json=upload_package)
+            print("response", r)
+
+            print(np.asarray(processedImg).nbytes)
+            # create processed package
+            upload_package_processed = {'img_name': img_name,
+                                        'img_data_processed':
+                                            im2str(processedImg),
+                                        'img_size_processed': (w2, h2),
+                                        'process_type': process.get(),
+                                        'timestamp': serialDate,
+                                        'latency': latency}
+
+            r2 = requests.post(local_url+'/api/'+email+'/post_new_image_pro',
+                               json=upload_package_processed)
+            print("response", r2)
+
+            if (r.content == 500 or r2.content == 500):
                 print("failed to add to MONGO, try again.")
             else:
-                submitSuccess = tk.Tk()
-                submitSuccess.title('Submit Success')
-                submitSuccess.geometry("400x150")  # (optional)
-                lbl = tk.Label(submitSuccess,
-                               text='Successfully Submitted Photo')
-                lbl.grid(column=0, row=0, columnspan=2)
-                lbl2 = tk.Button(submitSuccess, text='Return to Main Menu',
-                                 width=20)
-                lbl2.command = lambda: returnToMenu_uploadSucc(submitSuccess,
-                                                               uploadWindow)
-                lbl2.grid(column=0, row=1, pady=20)
-                lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or '
-                                 'Process', width=30)
-                lbl3.command = lambda: returnToUpload_uploadSucc(submitSuccess)
-                lbl3.grid(column=1, row=1, pady=20)
-                submitSuccess.mainloop()
+                submitSuccess = tk.Toplevel(content_upload)
+                # submitSucess.geometry("400x150")  # (optional)
+                lbl_suc = tk.Label(submitSuccess,
+                                   text='Successfully Submitted Photo')
+                lbl_suc.grid(column=0, row=0, columnspan=2)
+                lbl2_suc = tk.Button(submitSuccess, text='Return to Main Menu',
+                                     width=20, command=lambda:
+                                     returnToMenu_uploadSucc(submitSuccess,
+                                                             uploadWindow))
+                lbl2_suc.grid(column=0, row=1, pady=20)
+                lbl3_suc = tk.Button(submitSuccess, text='Upload Another'
+                                     'Photo or Process', width=30,
+                                     command=lambda:
+                                     returnToUpload_uploadSucc(submitSuccess))
+                lbl3_suc.grid(column=1, row=1, pady=20)
         else:
             print('havent chosen photo')
-        return
 
     def updateProcessed():
         """Command for radioButton of photo processing options. Uses nonlocal
@@ -376,15 +385,15 @@ def uploadScreen():
         nonlocal fname
         nonlocal latency, w, h, w2, h2
 
-        command = process.get()
+        processType = process.get()
         processedImg = ''
-        if command == 'he':
+        if processType == 'he':
             img = Image.open(fname)
             preProcessTime = datetime.datetime.now()
             processedImg = histEQ(img)
             postProcessTime = datetime.datetime.now()
             latency = (postProcessTime-preProcessTime).total_seconds()
-        elif command == 'cs':
+        elif processType == 'cs':
             img = Image.open(fname)
             preProcessTime = datetime.datetime.now()
             processedImg = contrastStretch(img)
@@ -401,10 +410,7 @@ def uploadScreen():
         showProcessed.image = imgTkprocessed
         showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
 
-        return
-
     root.mainloop()
-    return  # finishes uploadScreen() function
 
 
 def downloadPressed(mainMenuWindow):
@@ -430,6 +436,8 @@ def downloadScreen():
                                text='Choose a uploaded photo')
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
+    r = requests.get(local_url+'/api/'+email+'/get_image_list')
+    print('gui code download list type', type(r.json()), r.json())
     # populate a dictionary with image choices
     choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
     imageName_normal = tk.StringVar()
@@ -441,8 +449,9 @@ def downloadScreen():
     imageMenu.grid(column=1, row=0, pady=10)
 
     # create a back button
-    back_btn = tk.Button(content_download, text='Back to Menu', width=20)
-    back_btn.command = lambda: returnToMenu_download(content_download)
+    back_btn = tk.Button(content_download, text='Back to Menu', width=20,
+                         command=lambda:
+                             returnToMenu_download(content_download))
     # add padding for button
     back_btn.grid(column=0, row=5, pady=30)
 
@@ -472,9 +481,9 @@ def downloadScreen():
             # create download buttons
             download_btn_1 = tk.Button(content_download, text='Download '
                                                               'Original',
-                                       width=20)
-            download_btn_1.command = lambda: downloadOrig(content_download,
-                                                          img, filename)
+                                       width=20, command=lambda:
+                                           downloadOrig(content_download,
+                                                        img, filename))
             download_btn_1.grid(column=0, row=3, pady=10)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % fname)

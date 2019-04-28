@@ -52,8 +52,7 @@ def post_login():
 
 @app.route('/api/<email>/post_new_image', methods=['POST'])
 def post_new_image(email):
-    """Uploads normal image, processed image, timestamp,
-    process latency
+    """Uploads normal image
 
     Args:
         email (str): user email (primary key)
@@ -63,6 +62,23 @@ def post_new_image(email):
     print("submitting image to " + email)
     upload_package = request.get_json()
     message, code = mdb.new_image_added(email, upload_package)
+
+    print(message, code)
+    return message, code
+
+
+@app.route('/api/<email>/post_new_image_pro', methods=['POST'])
+def post_new_image_pro(email):
+    """Uploads processed image with latency
+
+    Args:
+        email (str): user email (primary key)
+
+    Returns:
+    """
+    print("submitting image to " + email)
+    upload_package_processed = request.get_json()
+    message, code = mdb.new_image_added_pro(email, upload_package_processed)
 
     print(message, code)
     return message, code
@@ -81,8 +97,9 @@ def get_image_list(email):
     """
     # for user in User.objects.raw({}):
     # image_dict = database['name']
-    image_list = pull_image_list(image_dict)
-    return jsonify(image_list)
+    mongo_image_list = mdb.normal_images(email)
+    print('server code mongo list type', type(mongo_image_list))
+    return jsonify(mongo_image_list)
 
 
 def pull_image_list(image_dict):

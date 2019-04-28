@@ -94,11 +94,9 @@ def new_image_added(email, upload_package):
     This function will take in a dictionary which contains the
      image name, the image data, and, the processing action.
      It will then.
-
     :param image_dict: A dictionary from the post request
     that contains the image name, the image data, and the processing
     action to be performed.
-
     :return:
     """
 
@@ -111,12 +109,7 @@ def new_image_added(email, upload_package):
     image_name = upload_package["img_name"]
     image_data = upload_package["img_data"]
     image_size = upload_package["img_size"]
-    processed_name = upload_package["img_name_processed"]
-    processed_data = upload_package["img_data_processed"]
-    processed_size = upload_package["img_size_processed"]
-    process_type = upload_package["process_type"]
     timestamp = upload_package["timestamp"]
-    latency = upload_package["latency"]
 
     orig_data_list = [image_name, image_data, image_size, timestamp]
 
@@ -124,6 +117,36 @@ def new_image_added(email, upload_package):
         user.original_images.append(orig_data_list)
     except AttributeError:
         user.original_images = orig_data_list
+
+    user.save()
+    return "Successful upload!", 201
+
+
+def new_image_added_pro(email, upload_package):
+    """
+    This function will take in a dictionary which contains the
+     processed image name, the processed image data, and, the processing
+     action. It will then save the processed image data to the correct
+     field in the MongoDB.
+    :param email: Email corresponding to the user.
+    :param upload_package:  A dictionary from the post request
+    that contains the processed image name, the processed image data, and
+    the processing action to be performed.
+    :return: A status message and a status code.
+    """
+
+    try:
+        user = UserImages.objects.raw({"_id": email}).first()
+    except UserImages.DoesNotExist:
+        new_user = add_new_user(email)
+        logging.debug(new_user)
+
+    image_name = upload_package["img_name"]
+    processed_data = upload_package["img_data_processed"]
+    processed_size = upload_package["img_size_processed"]
+    process_type = upload_package["process_type"]
+    timestamp = upload_package["timestamp"]
+    latency = upload_package["latency"]
 
     processed_data_list = [image_name, processed_data, processed_size,
                            timestamp, latency]
@@ -153,7 +176,24 @@ def new_image_added(email, upload_package):
         except AttributeError:
             user.rv_images = processed_data_list
     else:
-        return "Invalid!", 400
+        return "Invalid!", 500
 
     user.save()
     return "Successful upload!", 201
+
+
+def normal_images(email):
+    """This function simply returns the listField of normal images for a user
+
+    Args:
+        email (string): user email for ID
+
+    Returns:
+        mongo_image_list (listField): all uploaded non-processed images for
+        user
+    """
+    # gets database for this user
+    user = UserImages.objects.raw({"_id": email}).first()
+    # extract image_list
+    print(type(user.original_images))
+    return user.original_images
