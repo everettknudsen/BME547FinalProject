@@ -246,10 +246,23 @@ def download_single_image(email):
         rv_images = None
     else:
         pass
-    try:
-        orig_names = []
-        for images in orig_images:
-            orig_images = orig_names.append(images[0])
-        return orig_names
-    except Exception:
-        pass
+
+    orig_names = []
+    for images in orig_images:
+        orig_names.append(images[0])
+    he_names = []
+    for images in he_images:
+        he_temp = images[0] + "_he"
+        he_names.append(he_temp)
+    cs_names = []
+    for images in cs_images:
+        cs_temp = images[0] + "_cs"
+        cs_names.append(cs_temp)
+    lc_names = []
+    for images in lc_images:
+        lc_temp = images[0] + "_lc"
+        lc_names.append(lc_temp)
+    rv_names = []
+    for images in rv_images:
+        rv_temp = images[0] + "_rv"
+        rv_names.append(rv_temp)
