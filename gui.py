@@ -88,6 +88,8 @@ def retrieve_email(entryBox, window):
     # for upload flow, not used until image is uploaded
     # for download flow, used immediately to populate dropdown of images
     requests.post(local_url + '/api/login', json=email)
+    # run this to confirm full user list
+    # requests.post(local_url + '/api/logConfirm', json=email)
     destroyWindow(window)
     mainMenuScreen()
     return email
@@ -331,21 +333,20 @@ def uploadScreen():
             print(np.asarray(img).nbytes)
             # create normal package
             print(sys.getsizeof(im2str(img)))
-            serialDate = json_serial_date(datetime.datetime.now())
+            currTime = datetime.datetime.now()
+            serialDate = json_serial_date(currTime)
             upload_package = {'img_name': img_name, 'img_data': im2str(img),
-                              'img_size': (w, h),
+                              'img_size': [w, h],
                               'timestamp': serialDate}
 
             r = requests.post(local_url+'/api/'+email+'/post_new_image',
                               json=upload_package)
             print("response", r)
-
-            print(np.asarray(processedImg).nbytes)
             # create processed package
             upload_package_processed = {'img_name': img_name,
                                         'img_data_processed':
                                             im2str(processedImg),
-                                        'img_size_processed': (w2, h2),
+                                        'img_size_processed': [w2, h2],
                                         'process_type': process.get(),
                                         'timestamp': serialDate,
                                         'latency': latency}

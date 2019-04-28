@@ -1,15 +1,29 @@
+import pymongo
+import pymodm
+
 from pymodm import fields, MongoModel, connect
+from pymongo import MongoClient
+
 import datetime
 import logging
 from flask import Flask, jsonify
 
 
+db = ''
+client = ''
+
+
 def global_init():
+    global client, db
     connect("mongodb+srv://bme_547_final_project:bme_547_final_project"
             "@bme547finalproject-gjnxe.mongodb.net/test?retryWrites=true")
+    client = MongoClient("mongodb+srv://bme_547_final_project:bme_"
+                         "547_final_project@bme547finalproject-gjnxe."
+                         "mongodb.net/test?retryWrites=true")
+    db = client.test
 
 
-class UserImages(MongoModel):
+class users(MongoModel):
     """
     This is a class which initializes the data
     fields which will then be used to store
@@ -21,10 +35,7 @@ class UserImages(MongoModel):
     """
     email = fields.EmailField(required=True, primary_key=True)
     original_images = fields.ListField()
-    he_images = fields.ListField()
-    cs_images = fields.ListField()
-    lc_images = fields.ListField()
-    rv_images = fields.ListField()
+    processed_images = fields.ListField()
     he_count = fields.IntegerField()
     cs_count = fields.IntegerField()
     lc_count = fields.IntegerField()
@@ -33,10 +44,10 @@ class UserImages(MongoModel):
 
 def check_if_user_registered(email):
     try:
-        user = UserImages.objects.raw({"_id": email}).first()
+        user = users.objects.raw({"_id": email}).first()
         user_status = True
         return user_status
-    except UserImages.DoesNotExist:
+    except users.DoesNotExist:
         user_status = False
         return user_status
 
@@ -49,18 +60,15 @@ def add_new_user(email):
     :param email: Email argument input into the GUI
     :return:
     """
-    user = UserImages(email=email,
-                      he_count=0,
-                      cs_count=0,
-                      lc_count=0,
-                      rv_count=0)
-    user.save()
-
-    status_message = "User registered!"
-    return status_message, 201
+    user = users(email=email,
+                 he_count=0,
+                 cs_count=0,
+                 lc_count=0,
+                 rv_count=0).save()
+    return "User registered!"
 
 
-def get_user_data(email):
+def get_one_user(email):
     """
     This function will pull all the data for a given user
     and put it into a dictionary which can then be used in other
@@ -69,24 +77,18 @@ def get_user_data(email):
     :return: returns the populated user_dictionary
     """
     try:
-        user = UserImages.objects.raw({"_id": email}).first()
-        user_dict = {
-            'original_images': user.original_images,
-            'he_images': user.he_images,
-            'cs_images': user.cs_images,
-            'log_images': user.lc_images,
-            'rev_images': user.rv_images,
-            'he_count': user.he_count,
-            'cs_count': user.cs_count,
-            'log_count': user.lc_count,
-            'rev_count': user.rv_count,
-            'user_actions': user.user_actions,
-        }
-        return user_dict, 200
-    except UserImages.DoesNotExist:
-        user_dict = "The user does not exist! " \
+        user = db.users.find_one({"_id": email})
+        return user
+    except users.DoesNotExist:
+        user = "The user does not exist! " \
                     "Go back and register user!"
-        return user_dict, 400
+        return user
+
+
+def print_users():
+    active_users = db.users
+    for one_user in active_users.find():
+        print("Active Users:", one_user)
 
 
 def new_image_added(email, upload_package):
@@ -101,25 +103,22 @@ def new_image_added(email, upload_package):
     """
 
     try:
-        user = UserImages.objects.raw({"_id": email}).first()
-    except UserImages.DoesNotExist:
-        new_user = add_new_user(email)
-        logging.debug(new_user)
-
-    image_name = upload_package["img_name"]
-    image_data = upload_package["img_data"]
-    image_size = upload_package["img_size"]
-    timestamp = upload_package["timestamp"]
-
-    orig_data_list = [image_name, image_data, image_size, timestamp]
+        user = get_one_user(email)
+    except users.DoesNotExist:
+        user = add_new_user(email)
+        logging.debug(user)
 
     try:
-        user.original_images.append(orig_data_list)
-    except AttributeError:
-        user.original_images = orig_data_list
+        original_images = user['original_images']
+        original_images.append(upload_package)
+        db.user.update({'_id': email},
+                       {'$set': {'original_images': original_images}})
+    except KeyError:
+        original_images = upload_package
+        db.user.update({'_id': email},
+                       {'$set': {'original_images': original_images}})
 
-    user.save()
-    return "Successful upload!", 201
+    return "Successful upload!"
 
 
 def new_image_added_pro(email, upload_package):
@@ -136,50 +135,47 @@ def new_image_added_pro(email, upload_package):
     """
 
     try:
-        user = UserImages.objects.raw({"_id": email}).first()
-    except UserImages.DoesNotExist:
-        new_user = add_new_user(email)
-        logging.debug(new_user)
+        user = get_one_user(email)
+    except users.DoesNotExist:
+        user = add_new_user(email)
+        logging.debug(user)
 
-    image_name = upload_package["img_name"]
-    processed_data = upload_package["img_data_processed"]
-    processed_size = upload_package["img_size_processed"]
-    process_type = upload_package["process_type"]
-    timestamp = upload_package["timestamp"]
-    latency = upload_package["latency"]
+    try:
+        processed_images = user['processed_images']
+        processed_images.append(upload_package)
+        db.user.update({'_id': email},
+                       {'$set': {'processed_images': processed_images}})
+    except KeyError:
+        processed_images = upload_package
+        db.user.update({'_id': email},
+                       {'$set': {'processed_images': processed_images}})
 
-    processed_data_list = [image_name, processed_data, processed_size,
-                           timestamp, latency]
+    process_type = upload_package['process_type']
 
     if process_type == 'he':
-        user.he_count += 1
-        try:
-            user.he_images.append(processed_data_list)
-        except AttributeError:
-            user.he_images = processed_data_list
+        he_count = user['he_count']
+        he_count += 1
+        db.user.update({'_id': email},
+                       {'$set': {'he_count': he_count}})
     elif process_type == 'cs':
-        user.cs_count += 1
-        try:
-            user.cs_images.append(processed_data_list)
-        except AttributeError:
-            user.cs_images = processed_data_list
+        cs_count = user['cs_count']
+        cs_count += 1
+        db.user.update({'_id': email},
+                       {'$set': {'cs_count': cs_count}})
     elif process_type == 'lc':
-        user.lc_count += 1
-        try:
-            user.lc_images.append(processed_data_list)
-        except AttributeError:
-            user.lc_images = processed_data_list
+        lc_count = user['lc_count']
+        lc_count += 1
+        db.user.update({'_id': email},
+                       {'$set': {'lc_count': lc_count}})
     elif process_type == 'rv':
-        user.rv_count += 1
-        try:
-            user.rv_images.append(processed_data_list)
-        except AttributeError:
-            user.rv_images = processed_data_list
+        rv_count = user['rv_count']
+        rv_count += 1
+        db.user.update({'_id': email},
+                       {'$set': {'rv_count': rv_count}})
     else:
-        return "Invalid!", 500
+        return "Invalid Process!", 500
 
-    user.save()
-    return "Successful upload!", 201
+    return "Successful upload!"
 
 
 def normal_images(email):

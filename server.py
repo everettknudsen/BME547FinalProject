@@ -40,14 +40,27 @@ def post_login():
     is_user = mdb.check_if_user_registered(email)
 
     if is_user:
-        code = 200
         message = 'user exists'
     else:
-        message, code = mdb.add_new_user(email)
+        message = mdb.add_new_user(email)
 
     # return jsonify(r)
-    print(message, code)
-    return message, code
+    print(message)
+    return message
+
+
+@app.route('/api/logConfirm', methods=['POST'])
+def post_logConfirm():
+    """Queries user if email exists or
+    creates new database for new user
+
+    Args:
+
+    Returns:
+        email
+    """
+    mdb.print_users()
+    return 'tried to print'
 
 
 @app.route('/api/<email>/post_new_image', methods=['POST'])
@@ -61,10 +74,10 @@ def post_new_image(email):
     """
     print("submitting image to " + email)
     upload_package = request.get_json()
-    message, code = mdb.new_image_added(email, upload_package)
+    message = mdb.new_image_added(email, upload_package)
 
-    print(message, code)
-    return message, code
+    print(message)
+    return message
 
 
 @app.route('/api/<email>/post_new_image_pro', methods=['POST'])
@@ -78,10 +91,10 @@ def post_new_image_pro(email):
     """
     print("submitting image to " + email)
     upload_package_processed = request.get_json()
-    message, code = mdb.new_image_added_pro(email, upload_package_processed)
+    message = mdb.new_image_added_pro(email, upload_package_processed)
 
-    print(message, code)
-    return message, code
+    print(message)
+    return message
 
 
 @app.route('/api/<email>/get_image_list', methods=['GET'])
