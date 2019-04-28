@@ -92,12 +92,12 @@ def get_user_data(email):
 def new_image_added(email, upload_package):
     """
     This function will take in a dictionary which contains the
-     image name, the image data, and, the processing action.
-     It will then.
+     image name, the image data, and,
+     the processing action.
 
     :param image_dict: A dictionary from the post request
-    that contains the image name, the image data, and the processing
-    action to be performed.
+    that contains the image name, the image data,
+    and the processing action to be performed.
 
     :return:
     """
@@ -252,5 +252,3 @@ def download_single_image(email):
         return orig_names
     except Exception:
         pass
-
-
