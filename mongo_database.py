@@ -157,3 +157,4 @@ def new_image_added(email, upload_package):
 
     user.save()
     return "Successful upload!", 201
+
