@@ -12,7 +12,8 @@ from tkinter.messagebox import showerror
 from PIL import Image, ImageTk
 import pickle
 import base64
-import os, sys
+import os
+import sys
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
@@ -323,36 +324,54 @@ def uploadScreen():
             # POST username, image and imgProcessed, and timestamp, latency
 
             img_name = os.path.basename(fname)
-            nameNoExt = os.path.splitext(img_name)[0]
-            ext = os.path.splitext(img_name)[1]
+            # nameNoExt = os.path.splitext(img_name)[0]
+            # ext = os.path.splitext(img_name)[1]
             # img_name_processed = nameNoExt + '_' + process.get() + ext
-            
+
+            print(np.asarray(img).nbytes)
+            # create normal package
             print(sys.getsizeof(im2str(img)))
             serialDate = json_serial_date(datetime.datetime.now())
             upload_package = {'img_name': img_name, 'img_data': im2str(img),
                               'img_size': (w, h),
                               'timestamp': serialDate}
-            print('\n\n\n\n dictionary size '+str(sys.getsizeof(upload_package))+'\n\n\n\n')
+
             r = requests.post(local_url+'/api/'+email+'/post_new_image',
-                                 json=upload_package)
+                              json=upload_package)
             print("response", r)
-            if r.content == 500:
+
+            print(np.asarray(processedImg).nbytes)
+            # create processed package
+            upload_package_processed = {'img_name': img_name,
+                                        'img_data_processed':
+                                            im2str(processedImg),
+                                        'img_size_processed': (w2, h2),
+                                        'process_type': process.get(),
+                                        'timestamp': serialDate,
+                                        'latency': latency}
+
+            r2 = requests.post(local_url+'/api/'+email+'/post_new_image_pro',
+                               json=upload_package_processed)
+            print("response", r2)
+
+            if (r.content == 500 or r2.content == 500):
                 print("failed to add to MONGO, try again.")
             else:
                 submitSuccess = tk.Toplevel(content_upload)
                 # submitSucess.geometry("400x150")  # (optional)
-                lbl_succ = tk.Label(submitSuccess,
-                               text='Successfully Submitted Photo')
-                lbl_succ.grid(column=0, row=0, columnspan=2)
-                lbl2_succ = tk.Button(submitSuccess, text='Return to Main Menu',
-                                 width=20, command=lambda:
+                lbl_suc = tk.Label(submitSuccess,
+                                   text='Successfully Submitted Photo')
+                lbl_suc.grid(column=0, row=0, columnspan=2)
+                lbl2_suc = tk.Button(submitSuccess, text='Return to Main Menu',
+                                     width=20, command=lambda:
                                      returnToMenu_uploadSucc(submitSuccess,
-                                                                 uploadWindow))
-                lbl2_succ.grid(column=0, row=1, pady=20)
-                lbl3_succ = tk.Button(submitSuccess, text='Upload Another Photo or '
-                                 'Process', width=30, command=lambda:
-                                 returnToUpload_uploadSucc(submitSuccess))
-                lbl3_succ.grid(column=1, row=1, pady=20)
+                                                             uploadWindow))
+                lbl2_suc.grid(column=0, row=1, pady=20)
+                lbl3_suc = tk.Button(submitSuccess, text='Upload Another'
+                                     'Photo or Process', width=30,
+                                     command=lambda:
+                                     returnToUpload_uploadSucc(submitSuccess))
+                lbl3_suc.grid(column=1, row=1, pady=20)
         else:
             print('havent chosen photo')
 
