@@ -44,5 +44,3 @@ fig3 = plt.figure()
 logg = np.log(img1)
 logc = exposure.rescale_intensity(logg, out_range=(0, 255))
 plt.imshow(logg.astype('uint8'))
-
-
