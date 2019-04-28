@@ -157,3 +157,100 @@ def new_image_added(email, upload_package):
 
     user.save()
     return "Successful upload!", 201
+
+
+def new_image_added_pro(email, upload_package):
+    """
+    This function will take in a dictionary which contains the
+     processed image name, the processed image data, and, the processing action.
+     It will then save the processed image data to the correct
+     field in the MongoDB.
+
+    :param email: Email corresponding to the user.
+    :param upload_package:  A dictionary from the post request
+    that contains the processed image name, the processed image data, and
+    the processing action to be performed.
+
+    :return: A status message and a status code.
+    """
+
+    try:
+        user = UserImages.objects.raw({"_id": email}).first()
+    except UserImages.DoesNotExist:
+        new_user = add_new_user(email)
+        logging.debug(new_user)
+
+    image_name = upload_package["img_name"]
+    processed_data = upload_package["img_data_processed"]
+    processed_size = upload_package["img_size_processed"]
+    process_type = upload_package["process_type"]
+    timestamp = upload_package["timestamp"]
+    latency = upload_package["latency"]
+
+    processed_data_list = [image_name, processed_data, processed_size,
+                           timestamp, latency]
+
+    if process_type == 'he':
+        user.he_count += 1
+        try:
+            user.he_images.append(processed_data_list)
+        except AttributeError:
+            user.he_images = processed_data_list
+    elif process_type == 'cs':
+        user.cs_count += 1
+        try:
+            user.cs_images.append(processed_data_list)
+        except AttributeError:
+            user.cs_images = processed_data_list
+    elif process_type == 'lc':
+        user.lc_count += 1
+        try:
+            user.lc_images.append(processed_data_list)
+        except AttributeError:
+            user.lc_images = processed_data_list
+    elif process_type == 'rv':
+        user.rv_count += 1
+        try:
+            user.rv_images.append(processed_data_list)
+        except AttributeError:
+            user.rv_images = processed_data_list
+    else:
+        return "Invalid!", 400
+
+    user.save()
+    return "Successful upload!", 201
+
+
+def download_single_image(email):
+    try:
+        user = UserImages.objects.raw({"_id": email}).first()
+    except UserImages.DoesNotExist:
+        status_message = "User not registered! Add email and " \
+                         "upload images before downloading!"
+        return status_message, 400
+    orig_images = user.original_images
+    he_images = user.he_images
+    cs_images = user.cs_images
+    lc_images = user.lc_images
+    rv_images = user.rv_images
+    if not orig_images:
+        orig_images = None
+    elif not he_images:
+        he_images = None
+    elif not cs_images:
+        cs_images = None
+    elif not lc_images:
+        lc_images = None
+    elif not rv_images:
+        rv_images = None
+    else:
+        pass
+    try:
+        orig_names = []
+        for images in orig_images:
+            orig_images = orig_names.append(images[0])
+        return orig_names
+    except Exception:
+        pass
+
+
