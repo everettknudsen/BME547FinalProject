@@ -125,7 +125,8 @@ def new_image_added(email, upload_package):
     except AttributeError:
         user.original_images = orig_data_list
 
-    processed_data_list = [image_name, processed_data, processed_size, timestamp, latency]
+    processed_data_list = [image_name, processed_data, processed_size,
+                           timestamp, latency]
 
     if process_type == 'he':
         user.he_count += 1

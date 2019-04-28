@@ -32,12 +32,32 @@ def im2str(img):
     return imgSTR
 
 
+def str2im(img):
+    img = base64.b64decode(img)
+    img = pickle.loads(img)
+    return img
+
+
+""" proof that im2str and str2im works
+if __name__ == '__main__':
+    filepath = 'C:/Users/Kendall/Pictures/Proteinogenic Amino Acids.png'
+    img0 = Image.open(filepath)
+
+    img0 = im2str(img0)
+    img0 = str2im(img0)
+    figure1 = plt.figure()
+    plt.interactive(True)
+    plt.imshow(img0)
+    plt.show()
+"""
+
+
 def json_serial_date(obj):
     """JSON serializer for objects not serializable by default json code"""
 
     if isinstance(obj, (datetime.datetime, datetime.date)):
         return obj.isoformat()
-    raise TypeError ("Type %s not serializable" % type(obj))
+    raise TypeError("Type %s not serializable" % type(obj))
 
 
 def destroyWindow(window):
@@ -267,7 +287,7 @@ def uploadScreen():
         mainMenuScreen()
         return
 
-    def returnToMenu_uploadSuccess(successWindow, uploadWindow):
+    def returnToMenu_uploadSucc(successWindow, uploadWindow):
         """Helper function for a 'return to main menu' button to move from
         Upload success screen to Main Menu
 
@@ -282,7 +302,7 @@ def uploadScreen():
         mainMenuScreen()
         return
 
-    def returnToUpload_uploadSuccess(successWindow):
+    def returnToUpload_uploadSucc(successWindow):
         """Helper function for a button to move back from upload success
         screen to Upload screen. Preserves previously selected image, but
         allows new images to be selected.
@@ -306,39 +326,40 @@ def uploadScreen():
         if selectedPhoto:
             print('submitting')
             # POST username, image and imgProcessed, and timestamp, latency
-            
+
             img_name = os.path.basename(fname)
             nameNoExt = os.path.splitext(img_name)[0]
             ext = os.path.splitext(img_name)[1]
             img_name_processed = nameNoExt + '_' + process.get() + ext
-            
+
             serialDate = json_serial_date(datetime.datetime.now())
             upload_package = {'img_name': img_name, 'img_data': im2str(img),
-                              'img_size': (w, h), 
-                               'img_name_processed': img_name_processed,
-                               'img_data_processed': im2str(processedImg),
-                               'img_size_processed': (w2, h2),
-                               'process_type': process.get(),
-                               'timestamp': serialDate,
-                               'latency': latency}
+                              'img_size': (w, h),
+                              'img_name_processed': img_name_processed,
+                              'img_data_processed': im2str(processedImg),
+                              'img_size_processed': (w2, h2),
+                              'process_type': process.get(),
+                              'timestamp': serialDate,
+                              'latency': latency}
             m, c = requests.post((local_url+'/api/'+email+'/post_new_image'),
-                json=upload_package)
+                                 json=upload_package)
             if c != 201:
                 print("failed to add to MONGO, try again.")
             else:
                 submitSuccess = tk.Tk()
                 submitSuccess.title('Submit Success')
                 submitSuccess.geometry("400x150")  # (optional)
-                lbl = tk.Label(submitSuccess, text='Successfully Submitted Photo')
+                lbl = tk.Label(submitSuccess,
+                               text='Successfully Submitted Photo')
                 lbl.grid(column=0, row=0, columnspan=2)
                 lbl2 = tk.Button(submitSuccess, text='Return to Main Menu',
                                  width=20)
-                lbl2.command = lambda: returnToMenu_uploadSuccess(submitSuccess,
-                                                                  uploadWindow)
+                lbl2.command = lambda: returnToMenu_uploadSucc(submitSuccess,
+                                                               uploadWindow)
                 lbl2.grid(column=0, row=1, pady=20)
                 lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or '
                                  'Process', width=30)
-                lbl3.command = lambda: returnToUpload_uploadSuccess(submitSuccess)
+                lbl3.command = lambda: returnToUpload_uploadSucc(submitSuccess)
                 lbl3.grid(column=1, row=1, pady=20)
                 submitSuccess.mainloop()
         else:
