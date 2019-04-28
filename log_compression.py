@@ -9,3 +9,9 @@ def logCompression(pilImg):
     for all_pixels in np.nditer(pilImg, op_flags=['readwrite']):
         all_pixels[...] = c * np.log10(1 + all_pixels)
     return NumpytoPIL(pilImg)
+
+
+def reverseVideo(pilImg):
+    for all_pixels in np.nditer(pilImg, op_flags=['readwrite']):
+        all_pixels[...] = 255 - all_pixels
+    return NumpytoPIL(pilImg)
