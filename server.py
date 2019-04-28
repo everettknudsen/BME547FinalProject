@@ -14,7 +14,7 @@ import mongo_database as mdb
 
 
 app = Flask(__name__)
-
+mdb.init_mdb()  # connect to mongoDB
 
 # connect() to database
 
@@ -35,17 +35,17 @@ def post_login():
         email
     """
     email = request.get_json()
-    is_email(email)
+    # is_email(email)
 
-    user_status = mdb.check_if_user_registered(email)
+    is_user = mdb.check_if_user_registered(email)
 
-    if user_status is True:
-        return
+    if is_user:
+        code = 200
     else:
-        r = mdb.add_new_user(email)
+        message, code = mdb.add_new_user(email)
 
     # return jsonify(r)
-    return jsonify(email)
+    return print(email, code), code
 
 
 @app.route('/api/<email>/post_new_image', methods=['POST'])
@@ -58,26 +58,11 @@ def post_new_image(email):
 
     Returns:
     """
-    print(email)
-    submit_img_json = request.get_json()
-    img = submit_img_json['img']
-    processedImg = submit_img_json['processedImg']
+    print("submitting image to " + email)
+    upload_package = request.get_json()
+    message, code = mdb.new_image_added(email, upload_package)
 
-    img0 = str2im(img)
-    processedImg0 = str2im(processedImg)
-
-    figure1 = plt.figure()
-    plt.interactive(True)
-    plt.imshow(img0)
-    plt.show()
-
-    figure2 = plt.figure()
-    plt.interactive(True)
-    plt.imshow(processedImg0)
-    plt.show()
-    print(email)
-
-    return jsonify(img, processedImg)
+    return message, code
 
 
 @app.route('/api/<email>/get_image_list', methods=['GET'])

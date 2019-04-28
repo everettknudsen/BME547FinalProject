@@ -5,7 +5,7 @@ Created on Thu Apr 25 20:15:05 2019
 @author: nicwainwright
 """
 
-
+import requests
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror
@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 from skimage import exposure
+import datetime
 
 
 global email
@@ -49,7 +50,7 @@ def retrieve_email(entryBox, window):
     # this will be primary key of database
     # for upload flow, not used until image is uploaded
     # for download flow, used immediately to populate dropdown of images
-    # requests.post(local_url+'/api/login', json=email)
+    requests.post(local_url + '/api/login', json=email)
     destroyWindow(window)
     mainMenuScreen()
     return email
@@ -162,6 +163,13 @@ def uploadScreen():
     selectedPhoto = False
     # intialize filename for photo
     fname = ''
+    img = ''
+    processedImg = ''
+    latency = 0.0
+    w = 0
+    h = 0
+    w2 = 0
+    h2 = 0
 
     # create radiobuttons for what type of processing
     process = tk.StringVar()
@@ -194,7 +202,7 @@ def uploadScreen():
         browsing window. It will load image as described in parent function,
         uploadScreen().
         """
-        nonlocal fname
+        nonlocal fname, img, processedImg, latency, w, h, w2, h2
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;"
                                             "*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*")))
@@ -212,8 +220,11 @@ def uploadScreen():
                 nonlocal selectedPhoto
                 selectedPhoto = True
                 # also set initial processed photo to histogram
+                preProcessTime = datetime.datetime.now()
                 processedImg = histEQ(img)
-                w, h = processedImg.size
+                postProcessTime = datetime.datetime.now()
+                latency = (postProcessTime-preProcessTime).total_seconds()
+                w2, h2 = processedImg.size
                 resizeProcess = processedImg.resize((100, int(h*(100/w))),
                                                     Image.ANTIALIAS)
                 imgTkprocessed = ImageTk.PhotoImage(resizeProcess)
@@ -274,9 +285,31 @@ def uploadScreen():
             uploadWindow (tk.Frame): upload window to either destroy or return
             to depending on user action after upload
         """
+        nonlocal fname, img, processedImg, latency, process, w, h, w2, h2
         if selectedPhoto:
             print('submitting')
             # POST username, image and imgProcessed, and timestamp, latency
+            
+            img_name = os.path.basename(fname)
+            nameNoExt = os.path.splitext(img_name)[0]
+            ext = os.path.splitext(img_name)[1]
+            img_name_processed = nameNoExt + '_' + process + ext
+            
+            
+            
+            upload_package = {'img_name': img_name, 'img_data': img,
+                              'img_size': (w, h), 
+                               'img_name_processed', img_name_processed
+                               'img_data_processed': processedImg,
+                               'img_size_processed': (w2, h2)
+                               'process_type': process,
+                               'timestamp': datetime.datetime.now(),
+                               'latency': latency}
+            requests.post((local_url+'/api/'+email+'/post_new_image'),
+                json=upload_package)
+
+
+
             submitSuccess = tk.Tk()
             submitSuccess.title('Submit Success')
             submitSuccess.geometry("400x150")  # (optional)
@@ -291,7 +324,6 @@ def uploadScreen():
                              'Process', width=30)
             lbl3.command = lambda: returnToUpload_uploadSuccess(submitSuccess)
             lbl3.grid(column=1, row=1, pady=20)
-
             submitSuccess.mainloop()
         else:
             print('havent chosen photo')
@@ -305,19 +337,26 @@ def uploadScreen():
         """
         nonlocal process
         nonlocal fname
+        nonlocal latency, w, h, w2, h2
 
         command = process.get()
         processedImg = ''
         if command == 'he':
             img = Image.open(fname)
+            preProcessTime = datetime.datetime.now()
             processedImg = histEQ(img)
+            postProcessTime = datetime.datetime.now()
+            latency = (postProcessTime-preProcessTime).total_seconds()
         elif command == 'cs':
             img = Image.open(fname)
+            preProcessTime = datetime.datetime.now()
             processedImg = contrastStretch(img)
+            postProcessTime = datetime.datetime.now()
+            latency = (postProcessTime-preProcessTime).total_seconds()
         else:
             print('no process selected')
             return
-        w, h = processedImg.size
+        w2, h2 = processedImg.size
         resizeProcess = processedImg.resize((100, int(h*(100/w))),
                                             Image.ANTIALIAS)
         imgTkprocessed = ImageTk.PhotoImage(resizeProcess)
@@ -370,12 +409,15 @@ def downloadScreen():
     # add padding for button
     back_btn.grid(column=0, row=5, pady=30)
 
+    # initialize width and height variables
+    w = 0
+    h = 0
     # when dropdown value changes, do this
     def change_dropdown(*args):
         """Function called when dropdown of image is changed. Displays the
         image.
         """
-        nonlocal imageName_normal
+        nonlocal imageName_normal, w, h
         dirPath = 'C:/Users/wainw/Pictures/'
         filename = imageName_normal.get()
         fname = dirPath + filename

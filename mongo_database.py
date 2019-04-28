@@ -2,8 +2,10 @@ from pymodm import fields, MongoModel, connect
 import datetime
 import logging
 
-connect("mongodb+srv://bme_547_final_project:bme_547_final_project"
-        "@bme547finalproject-gjnxe.mongodb.net/test?retryWrites=true")
+
+def init_mdb():
+    connect("mongodb+srv://bme_547_final_project:bme_547_final_project"
+            "@bme547finalproject-gjnxe.mongodb.net/test?retryWrites=true")
 
 
 class UserImages(MongoModel):
@@ -53,7 +55,7 @@ def add_new_user(email):
     user.save()
 
     status_message = "User registered!"
-    return status_message, 200
+    return status_message, 201
 
 
 def get_user_data(email):
