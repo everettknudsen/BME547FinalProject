@@ -20,7 +20,6 @@ import numpy as np
 from skimage import exposure
 import datetime
 
-
 global email
 local_url = 'http://127.0.0.1:5000'
 
@@ -400,6 +399,18 @@ def uploadScreen():
             processedImg = contrastStretch(img)
             postProcessTime = datetime.datetime.now()
             latency = (postProcessTime-preProcessTime).total_seconds()
+        elif processType == 'lc':
+            img = Image.open(fname)
+            preProcessTime = datetime.datetime.now()
+            processedImg = logCompression(img)
+            postProcessTime = datetime.datetime.now()
+            latency = (postProcessTime-preProcessTime).total_seconds()
+        elif processType == 'rv':
+            img = Image.open(fname)
+            preProcessTime = datetime.datetime.now()
+            processedImg = reverseVideo(img)
+            postProcessTime = datetime.datetime.now()
+            latency = (postProcessTime-preProcessTime).total_seconds()
         else:
             print('no process selected')
             return
@@ -588,6 +599,20 @@ def contrastStretch(pilImg):
     p30, p70 = np.percentile(npImg, (30, 70))
     return NumpytoPIL(exposure.rescale_intensity(npImg, in_range=(p30, p70)))
 
+
+def logCompression(pilImg):
+    npImg = PILtoNumpy(pilImg)
+    c = 255 / (np.log10(1 + np.amax(npImg)))
+    for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
+        all_pixels[...] = c * np.log10(1 + all_pixels)
+    return NumpytoPIL(npImg)
+
+
+def reverseVideo(pilImg):
+    npImg = PILtoNumpy(pilImg)
+    for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
+        all_pixels[...] = 255 - all_pixels
+    return NumpytoPIL(npImg)
 
 root = tk.Tk()
 email = ''
