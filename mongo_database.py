@@ -42,6 +42,7 @@ class users(MongoModel):
 def check_if_user_registered(email):
     try:
         user = users.objects.raw({"_id": email}).first()
+        print(user)
         user_status = True
         return user_status
     except users.DoesNotExist:
@@ -88,7 +89,7 @@ def get_one_user(email):
 def print_users():
     active_users = db.users
     for one_user in active_users.find():
-        print("Active Users:", one_user)
+        print("\n\n User right now:", one_user, '\n\n')
 
 
 def new_image_added(email, upload_package):
@@ -112,9 +113,8 @@ def new_image_added(email, upload_package):
         original_images = user['original_images']
         name = upload_package['img_name']
         original_images.append(upload_package)
-        db.users.update({'_id': email,
-                         'original_images.img_name': {'$ne': name}},
-                        {'$push': {'original_images': original_images}})
+        db.users.update({'_id': email},
+                        {'$addToSet': {'original_images': original_images}})
 
         print_users()
     except KeyError:
@@ -203,4 +203,5 @@ def normal_images(email):
 
     # extract image_list
     print('\n\n mongo side type of list', type(image_list))
+    
     return image_list
