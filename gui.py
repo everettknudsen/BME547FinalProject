@@ -5,6 +5,7 @@ Created on Thu Apr 25 20:15:05 2019
 @author: nicwainwright
 """
 
+
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror
@@ -15,6 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 from skimage import exposure
+
 
 global email
 local_url = 'http://127.0.0.1:5000'
@@ -67,7 +69,9 @@ def loginScreen():
     instruction_lbl.grid(column=0, row=2, columnspan=2, pady=10, padx=190)
     emailBox = tk.Entry(content_email)
     emailBox.grid(column=0, row=3, columnspan=2)
-    submit_btn = tk.Button(content_email, text='Submit Email', command=lambda: retrieve_email(emailBox, content_email))
+    submit_btn = tk.Button(content_email, text='Submit Email',
+                           command=lambda: retrieve_email(emailBox,
+                                                          content_email))
     submit_btn.grid(column=0, row=4, columnspan=2, pady=10, padx=190)
     root.mainloop()
     return
@@ -92,17 +96,20 @@ def mainMenuScreen():
     content_mainMenu = tk.Frame(root)
     content_mainMenu.grid(column=0, row=0)
     root.geometry('500x300')
-    instruction_lbl = tk.Label(content_mainMenu, text='Would you like to upload a photo(s) or download?')
+    instruction_lbl = tk.Label(content_mainMenu,
+                               text='Would you like to upload a'
+                                    ' photo(s) or download?')
     instruction_lbl.grid(column=0, row=0, pady=30, columnspan=4, padx=120)
-    upload_btn = tk.Button(content_mainMenu, text='Upload', command=lambda: uploadPressed(content_mainMenu))
+    upload_btn = tk.Button(content_mainMenu, text='Upload',
+                           command=lambda: uploadPressed(content_mainMenu))
     upload_btn.grid(column=1, row=2)
-    download_btn = tk.Button(content_mainMenu, text='Download', command=lambda: downloadPressed(content_mainMenu))
+    download_btn = tk.Button(content_mainMenu, text='Download',
+                             command=lambda: downloadPressed(content_mainMenu))
     download_btn.grid(column=2, row=2)
-    back_btn = tk.Button(content_mainMenu, text='Back to Login', command=lambda: returnToLogin(content_mainMenu))
+    back_btn = tk.Button(content_mainMenu, text='Back to Login',
+                         command=lambda: returnToLogin(content_mainMenu))
     # add padding for button
     back_btn.grid(column=2, row=4, pady=100)
-
-
     root.mainloop()
     return
 
@@ -141,11 +148,14 @@ def uploadScreen():
     instruction_lbl.grid(column=0, row=0, padx=20)
 
     # create browse button
-    browse_btn = tk.Button(content_upload, text="Browse", command=lambda: load_img(), width=10)
+    browse_btn = tk.Button(content_upload, text="Browse",
+                           command=lambda: load_img(), width=10)
     browse_btn.grid(column=1, row=0, padx=20)
 
     # create upload button
-    upload_btn = tk.Button(content_upload, text="Upload", command=lambda: submit_img(content_upload), width=10)
+    upload_btn = tk.Button(content_upload, text="Upload",
+                           command=lambda: submit_img(content_upload),
+                           width=10)
     upload_btn.grid(column=3, row=0, padx=20)
 
     # set slectedPhoto to False because no photo selected at this point
@@ -174,9 +184,10 @@ def uploadScreen():
                             command=lambda: updateProcessed())
     rv_btn.grid(column=4, row=4)
 
-    back_btn = tk.Button(content_upload, text='Back', command=lambda: returnToMenu_upload(content_upload), width=20)
+    back_btn = tk.Button(content_upload, text='Back',
+                         command=lambda: returnToMenu_upload(content_upload),
+                         width=20)
     back_btn.grid(column=4, row=6, pady=50)
-
 
     def load_img():
         """Function called when 'browse' button is pressed. Opens a native
@@ -184,7 +195,8 @@ def uploadScreen():
         uploadScreen().
         """
         nonlocal fname
-        fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;*.tiff;.*tif;*.png;"),
+        fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;"
+                                            "*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*")))
 
         if fname.lower().endswith(('.jpeg', '.jpg', '.tiff', '.tif', '.png')):
@@ -192,7 +204,7 @@ def uploadScreen():
             try:
                 img = Image.open(fname)
                 w, h = img.size
-                resized = img.resize((100, int(h * (100 / w))), Image.ANTIALIAS)
+                resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
                 imgTk = ImageTk.PhotoImage(resized)
                 showUpload = tk.Label(content_upload, image=imgTk)
                 showUpload.image = imgTk
@@ -202,17 +214,18 @@ def uploadScreen():
                 # also set initial processed photo to histogram
                 processedImg = histEQ(img)
                 w, h = processedImg.size
-                resizeProcess = processedImg.resize((100, int(h * (100 / w))), Image.ANTIALIAS)
+                resizeProcess = processedImg.resize((100, int(h*(100/w))),
+                                                    Image.ANTIALIAS)
                 imgTkprocessed = ImageTk.PhotoImage(resizeProcess)
                 showProcessed = tk.Label(content_upload, image=imgTkprocessed)
                 showProcessed.image = imgTkprocessed
                 showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
-            except:  # <- naked except is a bad idea
-                showerror("Open Source File", "Failed to read file\n'%s'" % fname)
+            except:                     # <- naked except is a bad idea
+                showerror("Open Source File",
+                          "Failed to read file\n'%s'" % fname)
         else:
             print(fname.lower(), "is not a valid photo file")
         return
-
 
     def returnToMenu_upload(uploadWindow):
         """Helper function for a 'back' button to move from Upload screen to
@@ -241,7 +254,6 @@ def uploadScreen():
         mainMenuScreen()
         return
 
-
     def returnToUpload_uploadSuccess(successWindow):
         """Helper function for a button to move back from upload success
         screen to Upload screen. Preserves previously selected image, but
@@ -252,9 +264,7 @@ def uploadScreen():
             moving to back to upload window
         """
         destroyWindow(successWindow)
-
         return
-
 
     def submit_img(uploadWindow):
         """Function carried out on button press of 'upload'. POSTs image data
@@ -273,10 +283,13 @@ def uploadScreen():
             lbl = tk.Label(submitSuccess, text='Successfully Submitted Photo')
             lbl.grid(column=0, row=0, columnspan=2)
             lbl2 = tk.Button(submitSuccess, text='Return to Main Menu',
-                             command=lambda: returnToMenu_uploadSuccess(submitSuccess, uploadWindow), width=20)
+                             width=20)
+            lbl2.command = lambda: returnToMenu_uploadSuccess(submitSuccess,
+                                                              uploadWindow)
             lbl2.grid(column=0, row=1, pady=20)
-            lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or Process',
-                             command=lambda: returnToUpload_uploadSuccess(submitSuccess), width=30)
+            lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or '
+                             'Process', width=30)
+            lbl3.command = lambda: returnToUpload_uploadSuccess(submitSuccess)
             lbl3.grid(column=1, row=1, pady=20)
 
             submitSuccess.mainloop()
@@ -305,8 +318,8 @@ def uploadScreen():
             print('no process selected')
             return
         w, h = processedImg.size
-        resizeProcess = processedImg.resize((100, int(h * (100 / w))), Image.ANTIALIAS)
-
+        resizeProcess = processedImg.resize((100, int(h*(100/w))),
+                                            Image.ANTIALIAS)
         imgTkprocessed = ImageTk.PhotoImage(resizeProcess)
         showProcessed = tk.Label(content_upload, image=imgTkprocessed)
         showProcessed.image = imgTkprocessed
@@ -320,7 +333,6 @@ def uploadScreen():
 
 def downloadPressed(mainMenuWindow):
     """Helper function for a button to move from Main Menu to download screen
-
 
     Args:
         mainMenuWindow (tk.Frame): main menu window to be destroyed
@@ -338,8 +350,8 @@ def downloadScreen():
     content_download.grid(column=0, row=0)
     root.geometry('700x300')
 
-
-    instruction_lbl = tk.Label(content_download, text='Choose a uploaded photo')
+    instruction_lbl = tk.Label(content_download,
+                               text='Choose a uploaded photo')
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
     # populate a dictionary with image choices
@@ -348,18 +360,18 @@ def downloadScreen():
     imageName_normal.set('select image')  # set default option
 
     # create dropdown menu
-    imageMenu = tk.OptionMenu(content_download, imageName_normal, *choices, command=lambda _: processedOptions())
+    imageMenu = tk.OptionMenu(content_download, imageName_normal, *choices,
+                              command=lambda _: processedOptions())
     imageMenu.grid(column=1, row=0, pady=10)
 
     # create a back button
-    back_btn = tk.Button(content_download, text='Back to Menu', command=lambda: returnToMenu_download(content_download),
-                         width=20)
+    back_btn = tk.Button(content_download, text='Back to Menu', width=20)
+    back_btn.command = lambda: returnToMenu_download(content_download)
     # add padding for button
     back_btn.grid(column=0, row=5, pady=30)
 
     # when dropdown value changes, do this
     def change_dropdown(*args):
-
         """Function called when dropdown of image is changed. Displays the
         image.
         """
@@ -370,14 +382,17 @@ def downloadScreen():
         try:
             img = Image.open(fname)
             w, h = img.size
-            resized = img.resize((100, int(h * (100 / w))), Image.ANTIALIAS)
+            resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
             imgTk = ImageTk.PhotoImage(resized)
             showDownload = tk.Label(content_download, image=imgTk)
             showDownload.image = imgTk
             showDownload.grid(column=0, row=1, columnspan=2, rowspan=2)
             # create download buttons
-            download_btn_1 = tk.Button(content_download, text='Download Original',
-                                       command=lambda: downloadOrig(content_download, img, filename), width=20)
+            download_btn_1 = tk.Button(content_download, text='Download '
+                                                              'Original',
+                                       width=20)
+            download_btn_1.command = lambda: downloadOrig(content_download,
+                                                          img, filename)
             download_btn_1.grid(column=0, row=3, pady=10)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % fname)
@@ -385,7 +400,6 @@ def downloadScreen():
 
     # link function to change dropdown
     imageName_normal.trace('w', change_dropdown)
-
 
     def downloadOrig(downloadWindow, img, filename):
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
@@ -395,26 +409,26 @@ def downloadScreen():
         img.save(saveDir + '/' + filename)
         return
 
-
     def processedOptions():
         nonlocal imageName_normal
         nameNoExt = os.path.splitext(imageName_normal.get())[0]
         ext = os.path.splitext(imageName_normal.get())[1]
-        # find in list of user photos key.lower().startswith('imageName_normal')
+        # find in list user photos key.lower().startswith('imageName_normal')
         # use this sublist to populate choicesProcessed dictionary
 
         # secondary dropdown that populates once normal image selected
         # get all images names that start with imageName_normal
         choicesProcessed = {nameNoExt + '_he' + ext, nameNoExt + '_cs' + ext}
         imageName_processed = tk.StringVar()
-        imageName_processed.set(nameNoExt + '_he' + ext)  # set default option
+        imageName_processed.set(nameNoExt+'_he'+ext)  # set default option
 
         # give further instructions
-
-        instruction_lbl2 = tk.Label(content_download, text='Compare to a processed version')
+        instruction_lbl2 = tk.Label(content_download,
+                                    text='Compare to a processed version')
         instruction_lbl2.grid(column=2, row=0, padx=20, pady=10)
         # create dropdown menu
-        processedMenu = tk.OptionMenu(content_download, imageName_processed, *choicesProcessed)
+        processedMenu = tk.OptionMenu(content_download, imageName_processed,
+                                      *choicesProcessed)
         processedMenu.grid(column=3, row=0, pady=10)
 
         # when dropdown value changes, do this
@@ -429,7 +443,6 @@ def downloadScreen():
         """Helper function for a 'back' button to move from Download screen to
         Main Menu
 
-
         Args:
             downloadWindow (tk.Frame): download window to be destroyed before
             moving to main menu
@@ -437,7 +450,6 @@ def downloadScreen():
         destroyWindow(downloadWindow)
         mainMenuScreen()
         return
-
 
     root.mainloop()
     return
@@ -501,4 +513,3 @@ plt.imshow(PILtoNumpy(contrastStretch(img)))
 fig2 = plt.figure()
 plt.imshow(PILtoNumpy(histEQ(img)))
 """
-

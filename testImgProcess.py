@@ -48,4 +48,3 @@ plt.imshow(logg.astype('uint8'))
 """
 
 print(os.path.splitext(filepath)[0])
-
