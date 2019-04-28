@@ -10,6 +10,7 @@ import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror
 from PIL import Image, ImageTk
+import pickle
 import base64
 import os
 import matplotlib.pyplot as plt
@@ -21,6 +22,22 @@ import datetime
 
 global email
 local_url = 'http://127.0.0.1:5000'
+
+
+def im2str(img):
+    imgNP = np.array(img)
+    imgPK = pickle.dumps(imgNP)
+    img64 = base64.b64encode(imgPK)
+    imgSTR = str(img64, 'utf-8')
+    return imgSTR
+
+
+def json_serial_date(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
 
 
 def destroyWindow(window):
@@ -293,38 +310,37 @@ def uploadScreen():
             img_name = os.path.basename(fname)
             nameNoExt = os.path.splitext(img_name)[0]
             ext = os.path.splitext(img_name)[1]
-            img_name_processed = nameNoExt + '_' + process + ext
+            img_name_processed = nameNoExt + '_' + process.get() + ext
             
-            
-            
-            upload_package = {'img_name': img_name, 'img_data': img,
+            serialDate = json_serial_date(datetime.datetime.now())
+            upload_package = {'img_name': img_name, 'img_data': im2str(img),
                               'img_size': (w, h), 
-                               'img_name_processed', img_name_processed
-                               'img_data_processed': processedImg,
-                               'img_size_processed': (w2, h2)
-                               'process_type': process,
-                               'timestamp': datetime.datetime.now(),
+                               'img_name_processed': img_name_processed,
+                               'img_data_processed': im2str(processedImg),
+                               'img_size_processed': (w2, h2),
+                               'process_type': process.get(),
+                               'timestamp': serialDate,
                                'latency': latency}
-            requests.post((local_url+'/api/'+email+'/post_new_image'),
+            m, c = requests.post((local_url+'/api/'+email+'/post_new_image'),
                 json=upload_package)
-
-
-
-            submitSuccess = tk.Tk()
-            submitSuccess.title('Submit Success')
-            submitSuccess.geometry("400x150")  # (optional)
-            lbl = tk.Label(submitSuccess, text='Successfully Submitted Photo')
-            lbl.grid(column=0, row=0, columnspan=2)
-            lbl2 = tk.Button(submitSuccess, text='Return to Main Menu',
-                             width=20)
-            lbl2.command = lambda: returnToMenu_uploadSuccess(submitSuccess,
-                                                              uploadWindow)
-            lbl2.grid(column=0, row=1, pady=20)
-            lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or '
-                             'Process', width=30)
-            lbl3.command = lambda: returnToUpload_uploadSuccess(submitSuccess)
-            lbl3.grid(column=1, row=1, pady=20)
-            submitSuccess.mainloop()
+            if c != 201:
+                print("failed to add to MONGO, try again.")
+            else:
+                submitSuccess = tk.Tk()
+                submitSuccess.title('Submit Success')
+                submitSuccess.geometry("400x150")  # (optional)
+                lbl = tk.Label(submitSuccess, text='Successfully Submitted Photo')
+                lbl.grid(column=0, row=0, columnspan=2)
+                lbl2 = tk.Button(submitSuccess, text='Return to Main Menu',
+                                 width=20)
+                lbl2.command = lambda: returnToMenu_uploadSuccess(submitSuccess,
+                                                                  uploadWindow)
+                lbl2.grid(column=0, row=1, pady=20)
+                lbl3 = tk.Button(submitSuccess, text='Upload Another Photo or '
+                                 'Process', width=30)
+                lbl3.command = lambda: returnToUpload_uploadSuccess(submitSuccess)
+                lbl3.grid(column=1, row=1, pady=20)
+                submitSuccess.mainloop()
         else:
             print('havent chosen photo')
         return
@@ -398,7 +414,7 @@ def downloadScreen():
     imageName_normal = tk.StringVar()
     imageName_normal.set('select image')  # set default option
 
-    # create dropdown menu
+    # create dropdown menu that create a new menu for processed options
     imageMenu = tk.OptionMenu(content_download, imageName_normal, *choices,
                               command=lambda _: processedOptions())
     imageMenu.grid(column=1, row=0, pady=10)
@@ -412,6 +428,9 @@ def downloadScreen():
     # initialize width and height variables
     w = 0
     h = 0
+    w2 = 0
+    h2 = 0
+
     # when dropdown value changes, do this
     def change_dropdown(*args):
         """Function called when dropdown of image is changed. Displays the

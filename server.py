@@ -14,7 +14,7 @@ import mongo_database as mdb
 
 
 app = Flask(__name__)
-mdb.init_mdb()  # connect to mongoDB
+mdb.global_init()  # connect to mongoDB
 
 # connect() to database
 
@@ -41,11 +41,13 @@ def post_login():
 
     if is_user:
         code = 200
+        message = 'user exists'
     else:
         message, code = mdb.add_new_user(email)
 
     # return jsonify(r)
-    return print(email, code), code
+    print(message, code)
+    return message, code
 
 
 @app.route('/api/<email>/post_new_image', methods=['POST'])
@@ -62,6 +64,7 @@ def post_new_image(email):
     upload_package = request.get_json()
     message, code = mdb.new_image_added(email, upload_package)
 
+    print(message, code)
     return message, code
 
 
