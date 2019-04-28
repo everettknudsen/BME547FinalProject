@@ -12,7 +12,7 @@ from tkinter.messagebox import showerror
 from PIL import Image, ImageTk
 import pickle
 import base64
-import os
+import os, sys
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
@@ -331,7 +331,8 @@ def uploadScreen():
             nameNoExt = os.path.splitext(img_name)[0]
             ext = os.path.splitext(img_name)[1]
             img_name_processed = nameNoExt + '_' + process.get() + ext
-
+            
+            print(sys.getsizeof(im2str(img)))
             serialDate = json_serial_date(datetime.datetime.now())
             upload_package = {'img_name': img_name, 'img_data': im2str(img),
                               'img_size': (w, h),
@@ -341,9 +342,11 @@ def uploadScreen():
                               'process_type': process.get(),
                               'timestamp': serialDate,
                               'latency': latency}
-            m, c = requests.post((local_url+'/api/'+email+'/post_new_image'),
+            print('\n\n\n\n dictionary size '+str(sys.getsizeof(upload_package))+'\n\n\n\n')
+            r = requests.post(local_url+'/api/'+email+'/post_new_image',
                                  json=upload_package)
-            if c != 201:
+            print("response", r)
+            if r.content == 500:
                 print("failed to add to MONGO, try again.")
             else:
                 submitSuccess = tk.Tk()
@@ -430,6 +433,8 @@ def downloadScreen():
                                text='Choose a uploaded photo')
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
+    r = requests.get(local_url+'/api/'+email+'/get_image_list')
+    print('gui code download list type', type(r.json()), r.json())
     # populate a dictionary with image choices
     choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
     imageName_normal = tk.StringVar()

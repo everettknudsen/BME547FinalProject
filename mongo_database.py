@@ -157,3 +157,20 @@ def new_image_added(email, upload_package):
 
     user.save()
     return "Successful upload!", 201
+
+
+def normal_images(email):
+    """This function simply returns the listField of normal images for a user
+    
+    Args:
+        email (string): user email for ID
+
+    Returns:
+        mongo_image_list (listField): all uploaded non-processed images for
+        user
+    """
+    # gets database for this user
+    user = UserImages.objects.raw({"_id": email}).first()
+    # extract image_list
+    print(type(user.original_images))
+    return user.original_images
