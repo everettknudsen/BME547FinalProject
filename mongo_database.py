@@ -162,7 +162,8 @@ def new_image_added(email, upload_package):
 def new_image_added_pro(email, upload_package):
     """
     This function will take in a dictionary which contains the
-     processed image name, the processed image data, and, the processing action.
+     processed image name, the processed image data, and,
+     the processing action.
      It will then save the processed image data to the correct
      field in the MongoDB.
 
