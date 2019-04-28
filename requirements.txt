@@ -5,6 +5,7 @@ request
 requests
 datetime
 numpy
+scipy
 scikit-image
 pymodm
 dnspython
@@ -13,3 +14,4 @@ pymongo
 tqdm
 python-dateutil
 matplotlib
+sphinx
