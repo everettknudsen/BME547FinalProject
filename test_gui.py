@@ -4,10 +4,28 @@ from skimage import data
 import PIL
 from PIL import Image
 import numpy as np
-from gui import NumpytoPIL, PILtoNumpy
+from skimage import exposure
 
-im = data.moon()
-im0 = NumpytoPIL(im)
+
+def PILtoNumpy(pilImg):
+    """Helper function to convert a PIL image format to numpy.ndarray for
+    processing.
+
+    Args:
+        pilImg (PIL Image format image): the image to be converted
+    """
+    return np.array(pilImg)
+
+
+def NumpytoPIL(npImg):
+    """Helper function to convert numpy.ndarray formatted image to PIL format
+    for processing.
+
+    Args:
+        npImg (numpy.ndarray): the image to be converted
+    """
+    rescale_out = exposure.rescale_intensity(npImg, out_range=(0, 255))
+    return Image.fromarray(rescale_out.astype('uint8'))
 
 
 def test_NumpytoPIL_0():
@@ -19,6 +37,10 @@ def test_NumpytoPIL_0():
     ans = NumpytoPIL(im)
 
     assert type(ans) == PIL.Image.Image
+
+
+im = data.moon()
+im0 = NumpytoPIL(im)
 
 
 def test_NumpytoPIL_1():

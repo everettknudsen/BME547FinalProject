@@ -529,6 +529,7 @@ def downloadScreen():
     h2 = 0
     DLchoice = 'png'
     DLchoice2 = 'png'
+
     # when dropdown value changes, do this
     def change_dropdown(*args):
         """Function called when dropdown of image is changed. Displays the
@@ -614,7 +615,8 @@ def downloadScreen():
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
         # ext = os.path.splitext(imageName_normal.get())[1]
         saveDir = askdirectory()
-        imSave.save_im_as(img, DLchoice.get(), filename.replace('.'+DLchoice.get(),""), saveDir)
+        imSave.save_im_as(img, DLchoice.get(),
+                          filename.replace('.' + DLchoice.get(), ""), saveDir)
         # img.save(saveDir + '/' + filename)
         downloadSuccess = tk.Toplevel(downloadWindow)
         # submitSucess.geometry("400x150")  # (optional)
@@ -738,7 +740,8 @@ def downloadScreen():
                 # create dropdown menu that create a new menu for save type
                 dl_lbl2 = tk.Label(content_download, text='Save as type:')
                 dl_lbl2.grid(column=2, row=8)
-                imageMenu2 = tk.OptionMenu(content_download, DLchoice2, *DLchoices2)
+                imageMenu2 = tk.OptionMenu(content_download, DLchoice2,
+                                           *DLchoices2)
                 imageMenu2.grid(column=3, row=8)
             except:  # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read f"
