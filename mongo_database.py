@@ -193,11 +193,9 @@ def normal_images(email):
         mongo_image_list (listField): all uploaded non-processed images for
         user
     """
-    # gets database for this user
-    # user = get_one_user(email)
-    # print('\n user type', type(user))
+    # gets docs
     returnObj = db.users.find({'_id': email},
-                               {'original_images.img_name': 1, '_id': 0})
+                              {'original_images.img_name': 1, '_id': 0})
     # below is a list of dictionaries
     nameDictList = returnObj[0]['original_images']
 

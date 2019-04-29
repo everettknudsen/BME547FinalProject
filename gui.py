@@ -438,16 +438,15 @@ def downloadScreen():
 
     r = requests.get(local_url+'/api/'+email+'/get_image_list')
     imageList = r.json()
-    
+
     imageName_normal = tk.StringVar()
-    
+
     # if no images for this user
     if not imageList:
         choices = {'no images'}
     else:
         choices = imageList
         imageName_normal.set(imageList[0])  # set default option
-
 
     # create dropdown menu that create a new menu for processed options
     imageMenu = tk.OptionMenu(content_download, imageName_normal, *choices,
