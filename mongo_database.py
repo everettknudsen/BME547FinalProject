@@ -1,6 +1,3 @@
-import pymongo
-import pymodm
-
 from pymodm import fields, MongoModel, connect
 from pymongo import MongoClient
 
@@ -33,7 +30,7 @@ class users(MongoModel):
     also as a longer base64 string.
 
     """
-    email = fields.EmailField(required=True, primary_key=True)
+    email = fields.CharField(required=True, primary_key=True)
     original_images = fields.ListField()
     processed_images = fields.ListField()
     he_count = fields.IntegerField()
@@ -45,6 +42,7 @@ class users(MongoModel):
 def check_if_user_registered(email):
     try:
         user = users.objects.raw({"_id": email}).first()
+        print(user)
         user_status = True
         return user_status
     except users.DoesNotExist:
@@ -64,7 +62,8 @@ def add_new_user(email):
                  he_count=0,
                  cs_count=0,
                  lc_count=0,
-                 rv_count=0).save()
+                 rv_count=0)
+    user.save()
     return "User registered!"
 
 
@@ -78,17 +77,19 @@ def get_one_user(email):
     """
     try:
         user = db.users.find_one({"_id": email})
+        # print('current user is', user)
         return user
     except users.DoesNotExist:
-        user = "The user does not exist! " \
-                    "Go back and register user!"
+        user = "DNE"
+
+        # print('current user is', user)
         return user
 
 
 def print_users():
     active_users = db.users
     for one_user in active_users.find():
-        print("Active Users:", one_user)
+        print("\n\n User right now:", one_user, '\n\n')
 
 
 def new_image_added(email, upload_package):
@@ -104,19 +105,23 @@ def new_image_added(email, upload_package):
 
     try:
         user = get_one_user(email)
-    except users.DoesNotExist:
+    except user == "DNE":
         user = add_new_user(email)
         logging.debug(user)
 
     try:
-        original_images = user['original_images']
-        original_images.append(upload_package)
-        db.user.update({'_id': email},
-                       {'$set': {'original_images': original_images}})
-    except KeyError:
         original_images = upload_package
-        db.user.update({'_id': email},
-                       {'$set': {'original_images': original_images}})
+        name = upload_package['img_name']
+        db.users.update({'_id': email},
+                        {'$addToSet': {'original_images': original_images}})
+    except KeyError:
+        print('first image')
+        original_images = [upload_package]
+        print(type(original_images))
+        db.users.update({'_id': email},
+                        {'$set': {'original_images': original_images}},
+                        upsert=True)
+        print('current user is', user)
 
     return "Successful upload!"
 
@@ -136,42 +141,42 @@ def new_image_added_pro(email, upload_package):
 
     try:
         user = get_one_user(email)
-    except users.DoesNotExist:
+    except user == "DNE":
         user = add_new_user(email)
         logging.debug(user)
 
     try:
-        processed_images = user['processed_images']
-        processed_images.append(upload_package)
-        db.user.update({'_id': email},
-                       {'$set': {'processed_images': processed_images}})
-    except KeyError:
         processed_images = upload_package
-        db.user.update({'_id': email},
-                       {'$set': {'processed_images': processed_images}})
+        db.users.update({'_id': email},
+                        {'$addToSet': {'processed_images': processed_images}})
+    except KeyError:
+        processed_images = [upload_package]
+        db.users.update({'_id': email},
+                        {'$set': {'processed_images': processed_images}},
+                        upsert=True)
 
     process_type = upload_package['process_type']
 
     if process_type == 'he':
         he_count = user['he_count']
         he_count += 1
-        db.user.update({'_id': email},
-                       {'$set': {'he_count': he_count}})
+        db.users.update({'_id': email},
+                        {'$set': {'he_count': he_count}})
     elif process_type == 'cs':
         cs_count = user['cs_count']
         cs_count += 1
-        db.user.update({'_id': email},
-                       {'$set': {'cs_count': cs_count}})
+        db.users.update({'_id': email},
+                        {'$set': {'cs_count': cs_count}})
     elif process_type == 'lc':
         lc_count = user['lc_count']
         lc_count += 1
-        db.user.update({'_id': email},
-                       {'$set': {'lc_count': lc_count}})
+        db.users.update({'_id': email},
+                        {'$set': {'lc_count': lc_count}})
     elif process_type == 'rv':
         rv_count = user['rv_count']
         rv_count += 1
-        db.user.update({'_id': email},
-                       {'$set': {'rv_count': rv_count}})
+        db.users.update({'_id': email},
+                        {'$set': {'rv_count': rv_count}})
     else:
         return "Invalid Process!", 500
 
@@ -189,7 +194,8 @@ def normal_images(email):
         user
     """
     # gets database for this user
-    user = UserImages.objects.raw({"_id": email}).first()
-    # extract image_list
-    print(type(user.original_images))
-    return user.original_images
+    user = get_one_user(email)
+    print('\n user type', type(user))
+    #  print([item['original_images'] for item in user])
+
+    return {'empty'}
