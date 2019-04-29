@@ -3,27 +3,25 @@ import pytest
 from skimage import exposure, data
 import PIL
 import numpy as np
+from gui import PILtoNumpy, NumpytoPIL
 
-global ans0
 im = data.moon()
-
+im0 = PILtoNumpy(im)
 
 def test_PILtoNumpy():
-    from gui import PILtoNumpy
-
-    ans0 = PILtoNumpy(im)
-    return im
-    assert type(ans0) == np.ndarray
+    ans = PILtoNumpy(im)
+    assert type(ans) == np.ndarray
 
 
 def test_NumpytoPIL():
-    from gui import NumpytoPIL
+    ans = NumpytoPIL(im0)
 
-    ans = NumpytoPIL(im)
+    # ensure im0 is numpy and not PIL
+    assert type(im0) == np.ndarray
     assert type(ans) == PIL.Image.Image
 
-'''
 
+'''
 @pytest.mark.parametrize('x, expected', [
     (None, None),
     (None, None),
