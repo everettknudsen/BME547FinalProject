@@ -19,23 +19,10 @@ import matplotlib.image as mpimg
 import numpy as np
 from skimage import exposure
 import datetime
+import image_encoding_tests as CODER
 
 global email
 local_url = 'http://127.0.0.1:5000'
-
-
-def im2str(img):
-    imgNP = np.array(img)
-    imgPK = pickle.dumps(imgNP)
-    img64 = base64.b64encode(imgPK)
-    imgSTR = str(img64, 'utf-8')
-    return imgSTR
-
-
-def str2im(img):
-    img = base64.b64decode(img)
-    img = pickle.loads(img)
-    return img
 
 
 """ proof that im2str and str2im works
@@ -334,12 +321,13 @@ def uploadScreen():
             # ext = os.path.splitext(img_name)[1]
             # img_name_processed = nameNoExt + '_' + process.get() + ext
 
-            print(np.asarray(img).nbytes)
+            # print(np.asarray(img).nbytes)
             # create normal package
-            print(sys.getsizeof(im2str(img)))
+            # print(sys.getsizeof(im2str(img)))
             currTime = datetime.datetime.now()
             serialDate = json_serial_date(currTime)
-            upload_package = {'img_name': img_name, 'img_data': im2str(img),
+            enc_img = CODER.encode_image_as_b64(np.asarray(img))
+            upload_package = {'img_name': img_name, 'img_data': enc_img,
                               'img_size': [w, h],
                               'timestamp': serialDate}
 
@@ -347,9 +335,9 @@ def uploadScreen():
                               json=upload_package)
             print("response", r)
             # create processed package
+            enc_img_pro = CODER.encode_image_as_b64(np.asarray(processedImg))
             upload_package_processed = {'img_name': img_name,
-                                        'img_data_processed':
-                                            im2str(processedImg),
+                                        'img_data_processed': enc_img_pro,
                                         'img_size_processed': [w2, h2],
                                         'process_type': process.get(),
                                         'timestamp': serialDate,
@@ -453,12 +441,25 @@ def downloadScreen():
                                text='Choose a uploaded photo')
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
+<<<<<<< HEAD
     r = requests.get(local_url + '/api/' + email + '/get_image_list')
     print('gui code download list type', type(r), r)
     # populate a dictionary with image choices
     choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
+=======
+    r = requests.get(local_url+'/api/'+email+'/get_image_list')
+    imageList = r.json()
+    
+>>>>>>> [#1] [#18] [#42] [#41] download to large error no longer seems to be a problem. finally able to extract a list of uploaded photos from mongo database and display a dropdown menu for original images options [#40] also implemented everetts compression to string of image that is 10x smaller
     imageName_normal = tk.StringVar()
-    imageName_normal.set('select image')  # set default option
+    
+    # if no images for this user
+    if not imageList:
+        choices = {'no images'}
+    else:
+        choices = imageList
+        imageName_normal.set(imageList[0])  # set default option
+
 
     # create dropdown menu that create a new menu for processed options
     imageMenu = tk.OptionMenu(content_download, imageName_normal, *choices,
@@ -651,9 +652,15 @@ def reverseVideo(pilImg):
     return NumpytoPIL(npImg)
 
 
+<<<<<<< HEAD
 root = tk.Tk()
+=======
+>>>>>>> [#1] [#18] [#42] [#41] download to large error no longer seems to be a problem. finally able to extract a list of uploaded photos from mongo database and display a dropdown menu for original images options [#40] also implemented everetts compression to string of image that is 10x smaller
 email = ''
-loginScreen()
+root = ''
+if __name__ == "__main__":
+    root = tk.Tk()
+    loginScreen()
 
 # uncomment following block of code to prove that contrast stretch and
 # histogram equalization work!
