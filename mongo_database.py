@@ -197,9 +197,5 @@ def normal_images(email):
     user = get_one_user(email)
     print('\n user type', type(user))
     #  print([item['original_images'] for item in user])
-        
-    
-    #prices = [p["Price"] for p in user["Prices per dates"]]
-    #First print statement
-    
+
     return {'empty'}
