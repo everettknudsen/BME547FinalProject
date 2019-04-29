@@ -3,7 +3,6 @@ import pytest
 from skimage import exposure, data
 import PIL
 import numpy as np
-from gui import PILtoNumpy, NumpytoPIL
 
 global ans0
 im = data.moon()
