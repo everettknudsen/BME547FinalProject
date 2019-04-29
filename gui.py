@@ -614,9 +614,13 @@ def reverseVideo(pilImg):
         all_pixels[...] = 255 - all_pixels
     return NumpytoPIL(npImg)
 
-root = tk.Tk()
+
 email = ''
-loginScreen()
+root = ''
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    loginScreen()
 
 # uncomment following block of code to prove that contrast stretch and
 # histogram equalization work!
