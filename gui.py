@@ -468,7 +468,7 @@ def downloadScreen():
     def change_dropdown(*args):
         """Function called when dropdown of image is changed. Displays the
         image.
-        
+
         Args:
             *args: takes tk.OptionMenu values and updates correspondingly
         """
