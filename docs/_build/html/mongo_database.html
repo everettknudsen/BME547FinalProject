@@ -1,0 +1,501 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>mongo_database module &#8212; BME547 Final Project Apr 29, 2019 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-mongo_database">
+<span id="mongo-database-module"></span><h1>mongo_database module<a class="headerlink" href="#module-mongo_database" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mongo_database.add_new_user">
+<code class="descclassname">mongo_database.</code><code class="descname">add_new_user</code><span class="sig-paren">(</span><em>email</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.add_new_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function initializes a user in
+the image database before any
+images are uploaded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>email</strong> – Email argument input into the GUI</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.check_if_user_registered">
+<code class="descclassname">mongo_database.</code><code class="descname">check_if_user_registered</code><span class="sig-paren">(</span><em>email</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.check_if_user_registered" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.download_normal_img">
+<code class="descclassname">mongo_database.</code><code class="descname">download_normal_img</code><span class="sig-paren">(</span><em>email</em>, <em>photo_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.download_normal_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns img_data for a normal image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> (<em>string</em>) – user email for ID</li>
+<li><strong>photo_name</strong> (<em>string</em>) – which photo to load processed options for</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">string of encoded photo data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">photoString (str)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.download_processed_img">
+<code class="descclassname">mongo_database.</code><code class="descname">download_processed_img</code><span class="sig-paren">(</span><em>email</em>, <em>photo_name</em>, <em>processType</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.download_processed_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns image data for a processed image given normal
+image name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> (<em>string</em>) – user email for ID</li>
+<li><strong>photo_name</strong> (<em>string</em>) – which photo to load processed data for</li>
+<li><strong>processType</strong> (<em>string</em>) – which process type to load</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">string of encoded photo data</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">photoString (str)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.get_latency">
+<code class="descclassname">mongo_database.</code><code class="descname">get_latency</code><span class="sig-paren">(</span><em>email</em>, <em>photo_name</em>, <em>processType</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.get_latency" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns latency for a processed image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> (<em>string</em>) – user email for ID</li>
+<li><strong>photo_name</strong> (<em>string</em>) – which photo to load latency for</li>
+<li><strong>processType</strong> (<em>string</em>) – which process type to load</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">latency value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">latency (float)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.get_one_user">
+<code class="descclassname">mongo_database.</code><code class="descname">get_one_user</code><span class="sig-paren">(</span><em>email</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.get_one_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will pull all the data for a given user
+and put it into a dictionary which can then be used in other
+modules.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>email</strong> – Email input from the GUI.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns the populated user_dictionary</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.get_time">
+<code class="descclassname">mongo_database.</code><code class="descname">get_time</code><span class="sig-paren">(</span><em>email</em>, <em>photo_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.get_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns timestamp of upload for a normal image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> (<em>string</em>) – user email for ID</li>
+<li><strong>photo_name</strong> (<em>string</em>) – which photo to load processed options for</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">datetime object of upload time</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">timestamp (datetime.datetime)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.get_time_pro">
+<code class="descclassname">mongo_database.</code><code class="descname">get_time_pro</code><span class="sig-paren">(</span><em>email</em>, <em>photo_name</em>, <em>processType</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.get_time_pro" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns timestamp for a processed image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> (<em>string</em>) – user email for ID</li>
+<li><strong>photo_name</strong> (<em>string</em>) – which photo to load timestamp for</li>
+<li><strong>processType</strong> (<em>string</em>) – which process type to load</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">timestamp of img</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">timestamp (datetime.datetime)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.global_init">
+<code class="descclassname">mongo_database.</code><code class="descname">global_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.global_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.new_image_added">
+<code class="descclassname">mongo_database.</code><code class="descname">new_image_added</code><span class="sig-paren">(</span><em>email</em>, <em>upload_package</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.new_image_added" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will take in a dictionary which contains the
+image name, the image data, and, the processing action.
+It will then.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>image_dict</strong> – A dictionary from the post request</td>
+</tr>
+</tbody>
+</table>
+<p>that contains the image name, the image data, and the processing
+action to be performed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">status message</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.new_image_added_pro">
+<code class="descclassname">mongo_database.</code><code class="descname">new_image_added_pro</code><span class="sig-paren">(</span><em>email</em>, <em>upload_package</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.new_image_added_pro" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>This function will take in a dictionary which contains the</dt>
+<dd>processed image name, the processed image data, and, the processing
+action. It will then save the processed image data to the correct
+field in the MongoDB.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> – Email corresponding to the user.</li>
+<li><strong>upload_package</strong> – A dictionary from the post request</li>
+<li><strong>contains the processed image name</strong><strong>, </strong><strong>the processed image data</strong><strong>, </strong><strong>and</strong> (<em>that</em>) – </li>
+<li><strong>processing action to be performed.</strong> (<em>the</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A status message</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sttring</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.normal_images">
+<code class="descclassname">mongo_database.</code><code class="descname">normal_images</code><span class="sig-paren">(</span><em>email</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.normal_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function simply returns a list of normal images (unique) for a user</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>email</strong> (<em>string</em>) – user email for ID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">all uploaded non-processed images for user</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">imgList (list)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.print_users">
+<code class="descclassname">mongo_database.</code><code class="descname">print_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.print_users" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="mongo_database.processed_images">
+<code class="descclassname">mongo_database.</code><code class="descname">processed_images</code><span class="sig-paren">(</span><em>email</em>, <em>photo_name</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.processed_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function simply returns a list of processed images (unique)
+for a user</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> (<em>string</em>) – user email for ID</li>
+<li><strong>photo_name</strong> (<em>string</em>) – which photo to load processed options for</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">all uploaded processed images for user</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">imgList (list)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="mongo_database.users">
+<em class="property">class </em><code class="descclassname">mongo_database.</code><code class="descname">users</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mongo_database.users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodm.base.models.MongoModel</span></code></p>
+<p>This is a class which initializes the data
+fields which will then be used to store
+all data in the MongoDB database.
+For original_images, he_images…, the inputs will be
+a tuple containing the image name as a string and the image data
+also as a longer base64 string.</p>
+<dl class="exception">
+<dt id="mongo_database.users.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#mongo_database.users.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodm.errors.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="mongo_database.users.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#mongo_database.users.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodm.errors.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.cs_count">
+<code class="descname">cs_count</code><a class="headerlink" href="#mongo_database.users.cs_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a Python int.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.email">
+<code class="descname">email</code><a class="headerlink" href="#mongo_database.users.email" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores unicode strings.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.he_count">
+<code class="descname">he_count</code><a class="headerlink" href="#mongo_database.users.he_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a Python int.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.lc_count">
+<code class="descname">lc_count</code><a class="headerlink" href="#mongo_database.users.lc_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a Python int.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.objects">
+<code class="descname">objects</code><a class="headerlink" href="#mongo_database.users.objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>The default manager used for <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoModel</span></code> instances.</p>
+<p>This implementation of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseManager</span></code> uses
+<code class="xref py py-class docutils literal notranslate"><span class="pre">QuerySet</span></code> as its QuerySet class.</p>
+<p>This Manager class (accessed via the <code class="docutils literal notranslate"><span class="pre">objects</span></code> attribute on a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoModel</span></code>) is used by default for all MongoModel classes,
+unless another Manager instance is supplied as an attribute within the
+MongoModel definition.</p>
+<p>Managers have two primary functions:</p>
+<ol class="arabic simple">
+<li>Construct <code class="xref py py-class docutils literal notranslate"><span class="pre">QuerySet</span></code> instances for use when
+querying or working with <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoModel</span></code> instances in bulk.</li>
+<li>Define collection-level functionality that can be reused across different
+MongoModel types.</li>
+</ol>
+<p>If you created a custom QuerySet that makes certain queries easier, for
+example, you will need to create a custom Manager type that returns this
+queryset using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">from_queryset()</span></code>
+method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UserQuerySet</span><span class="p">(</span><span class="n">QuerySet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return only active users.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">({</span><span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">MongoModel</span><span class="p">):</span>
+    <span class="n">active</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">()</span>
+    <span class="c1"># Add our custom Manager.</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">Manager</span><span class="o">.</span><span class="n">from_queryset</span><span class="p">(</span><span class="n">UserQuerySet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above example, we added a <cite>users</cite> attribute on <cite>User</cite> so that we can
+use the <cite>active</cite> method on our new QuerySet type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">active_users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">active</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If we wanted every method on the QuerySet to examine active users <em>only</em>, we
+can do that by customizing the Manager itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UserManager</span><span class="p">(</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Override get_queryset, so that every QuerySet created will</span>
+        <span class="c1"># have this filter applied.</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">UserManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">MongoModel</span><span class="p">):</span>
+    <span class="n">active</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">()</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">UserManager</span><span class="p">()</span>
+
+<span class="n">active_users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.original_images">
+<code class="descname">original_images</code><a class="headerlink" href="#mongo_database.users.original_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.processed_images">
+<code class="descname">processed_images</code><a class="headerlink" href="#mongo_database.users.processed_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mongo_database.users.rv_count">
+<code class="descname">rv_count</code><a class="headerlink" href="#mongo_database.users.rv_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a Python int.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">BME547 Final Project</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Nic, Everett, Kendall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/mongo_database.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
