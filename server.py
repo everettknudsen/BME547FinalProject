@@ -35,7 +35,7 @@ def post_login():
         email
     """
     email = request.get_json()
-    # is_email(email)
+    is_email(email)
 
     is_user = mdb.check_if_user_registered(email)
 
@@ -256,13 +256,6 @@ class NotEmail(Exception):
         return rv
 
 
-@app.errorhandler(NotEmail)
-def handle_not_email(error):
-    resp = jsonify(error.to_dict())
-    resp.status_code = error.status_code
-    return resp
-
-
 def is_email(x):
     """Tests if input is an email
 
@@ -279,12 +272,6 @@ def is_email(x):
     else:
         message_400 = 'Please enter a valid email address.'
         raise NotEmail(message_400, status_code=400)
-
-
-def str2im(img):
-    img = base64.b64decode(img)
-    img = pickle.loads(img)
-    return img
 
 
 if __name__ == '__main__':
