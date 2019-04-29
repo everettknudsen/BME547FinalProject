@@ -177,6 +177,57 @@ def get_image_pro(email, img_name, processType):
     return jsonify(img_data)
 
 
+@app.route('/api/<email>/<img_name>/get_time', methods=['GET'])
+def get_time(email, img_name):
+    """Pulls up timestamp when image chosen from dropdown menu
+
+    Args:
+        user (str): user email (primary key)
+        img_name (str): name of desired image
+
+    Returns:
+        timestamp (datetime.datetime): datetime object of time when photo was
+        uploaded
+    """
+    time = mdb.get_time(email, img_name)
+    return jsonify(time)
+
+
+@app.route('/api/<email>/<img_name>/get_time_pro_<processType>',
+           methods=['GET'])
+def get_time_pro(email, img_name, processType):
+    """Pulls up timestamp when process chosen from dropdown menu
+
+    Args:
+        user (str): user email (primary key)
+        img_name (str): name of desired image
+        processType (str): process of image to load
+
+    Returns:
+        timestamp (datetime.datetime): datetime object of time when photo was
+        uploaded
+    """
+    time = mdb.get_time_pro(email, img_name, processType)
+    return jsonify(time)
+
+
+@app.route('/api/<email>/<img_name>/get_latency_<processType>',
+           methods=['GET'])
+def get_latency(email, img_name, processType):
+    """Pulls up latency of img after chosen
+
+    Args:
+        user (str): user email (primary key)
+        img_name (str): name of desired image
+        processType (str): process type of image to load
+
+    Returns:
+        latency (float): latency value
+    """
+    latency = mdb.get_latency(email, img_name, processType)
+    return jsonify(latency)
+
+
 def pull_image(img_name):
     """Obtains info for one image from database
 

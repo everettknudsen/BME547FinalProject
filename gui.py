@@ -116,7 +116,7 @@ def mainMenuScreen():
     back_btn = tk.Button(content_mainMenu, text='Back to Login',
                          command=lambda: returnToLogin(content_mainMenu))
     # add padding for button
-    back_btn.grid(column=2, row=4, pady=100)
+    back_btn.grid(column=2, row=6, pady=100)
     root.mainloop()
 
 
@@ -178,7 +178,7 @@ def uploadScreen():
     h2 = 0
 
     # create radiobuttons for what type of processing
-    process = tk.StringVar()
+    process = tk.StringVar(content_upload)
     process.set("he")  # initialize
 
     he_btn = tk.Radiobutton(content_upload, text='Histogram Equalization',
@@ -224,6 +224,14 @@ def uploadScreen():
                 showUpload = tk.Label(content_upload, image=imgTk)
                 showUpload.image = imgTk
                 showUpload.grid(column=0, row=1, columnspan=2, rowspan=2)
+                sizeStr = 'w:' + str(w) + 'h:' + str(h)
+                size_lbl = tk.Label(content_upload, text=sizeStr)
+                size_lbl.text = sizeStr
+                size_lbl.grid(column=0, row=3, columnspan=2)
+                rightNow = datetime.datetime.now()
+                time_lbl = tk.Label(content_upload, text=str(rightNow))
+                time_lbl.text = rightNow
+                time_lbl.grid(column=0, row=4, columnspan=2)
                 nonlocal selectedPhoto
                 selectedPhoto = True
                 # also set initial processed photo to histogram
@@ -238,6 +246,18 @@ def uploadScreen():
                 showProcessed = tk.Label(content_upload, image=imgTkprocessed)
                 showProcessed.image = imgTkprocessed
                 showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
+                sizeStr_pro = 'w: ' + str(w2) + ' h:' + str(h2)
+                size_lbl2 = tk.Label(content_upload, text=sizeStr_pro)
+                size_lbl2.text = sizeStr_pro
+                size_lbl2.grid(column=2, row=3, columnspan=2)
+                rightNow2 = datetime.datetime.now()
+                time_lbl2 = tk.Label(content_upload, text=str(rightNow2))
+                time_lbl2.text = rightNow2
+                time_lbl2.grid(column=2, row=4, columnspan=2)
+                latStr = 'latency:' + str(round(latency, 2)) + ' sec'
+                lat_lbl = tk.Label(content_upload, text=latStr)
+                lat_lbl.text = latStr
+                lat_lbl.grid(column=2, row=5, columnspan=2)
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File",
                           "Failed to read file\n'%s'" % fname)
@@ -394,6 +414,15 @@ def uploadScreen():
         showProcessed = tk.Label(content_upload, image=imgTkprocessed)
         showProcessed.image = imgTkprocessed
         showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
+        rightNow2 = datetime.datetime.now()
+        time_lbl2 = tk.Label(content_upload, text=str(rightNow2))
+        time_lbl2.text = rightNow2
+        time_lbl2.grid(column=2, row=4, columnspan=2)
+        latStr = 'latency: ' + str(round(latency, 2)) + ' sec'
+        print(latStr)
+        lat_lbl = tk.Label(content_upload, text=latStr)
+        lat_lbl.text = latStr
+        lat_lbl.grid(column=2, row=5, columnspan=2)
 
     root.mainloop()
 
@@ -456,7 +485,7 @@ def downloadScreen():
                          command=lambda:
                              returnToMenu_download(content_download))
     # add padding for button
-    back_btn.grid(column=0, row=5, pady=30)
+    back_btn.grid(column=0, row=6, pady=30)
 
     # initialize width and height variables
     w = 0
@@ -484,6 +513,10 @@ def downloadScreen():
         imgStr_download = rDown.json()
         decodedDL_norm = CODER.decode_image_from_b64(imgStr_download)
         PILdl_norm = Image.fromarray(decodedDL_norm)
+        # also get timestamp
+        rTim = requests.get(local_url + '/api/' + email + '/'
+                            '' + imName + '/get_time')
+        timestamp = rTim.json()
         try:
             w, h = PILdl_norm.size
             resized = PILdl_norm.resize((100, int(h*(100/w))),
@@ -492,13 +525,19 @@ def downloadScreen():
             showDownload = tk.Label(content_download, image=imgTk)
             showDownload.image = imgTk
             showDownload.grid(column=0, row=1, columnspan=2, rowspan=2)
+            sizeStr_dl = 'w:' + str(w) + ' h:' + str(h)
+            size_lbl_dl = tk.Label(content_download, text=sizeStr_dl)
+            size_lbl_dl.grid(column=0, row=3, columnspan=2)
+            time_lbl = tk.Label(content_download, text=str(timestamp))
+            time_lbl.text = timestamp
+            time_lbl.grid(column=0, row=4, columnspan=2)
             # create download buttons
             download_btn_1 = tk.Button(content_download, text='Download '
                                                               'Original',
                                        width=20, command=lambda:
                                            downloadPhoto(content_download,
                                                          PILdl_norm, imName))
-            download_btn_1.grid(column=0, row=3, pady=10)
+            download_btn_1.grid(column=0, row=6, pady=10)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % imName)
         return
@@ -587,11 +626,20 @@ def downloadScreen():
             process = process.replace(ext, '')
             procName = nameNoExt+'_'+process+ext
             # print(procName)  # this is correct . displays im1_rv.jpg
-            rDown_pro = requests.get(local_url+'/api/'+email+'/'+imName+'/get'
-                                     '_image_pro_'+process)
+            rDown_pro = requests.get(local_url + '/api/' + email + '/'
+                                     '' + imName+'/get_image_pro_'+process)
             imgStr_download_pro = rDown_pro.json()
             decodedDL = CODER.decode_image_from_b64(imgStr_download_pro)
             PILdl = Image.fromarray(decodedDL)
+            imgStr_download_pro = rDown_pro.json()
+            # also get timestamp
+            rTim = requests.get(local_url + '/api/' + email + '/'
+                                '' + imName + '/get_time_pro_' + process)
+            timestamp2 = rTim.json()
+            # also get latency
+            rLat = requests.get(local_url+'/api/'+email+'/'+imName+'/'
+                                'get_latency_'+process)
+            oneLatency = rLat.json()
             try:
                 w2, h2 = PILdl.size
                 resized_pro = PILdl.resize((100, int(h2*(100/w2))),
@@ -600,13 +648,23 @@ def downloadScreen():
                 showDownload_pro = tk.Label(content_download, image=imgTk_pro)
                 showDownload_pro.image = imgTk_pro
                 showDownload_pro.grid(column=2, row=1, columnspan=2, rowspan=2)
+                sizeStr2_dl = 'w:' + str(w2) + ' h:' + str(h2)
+                size_lbl2_dl = tk.Label(content_download, text=sizeStr2_dl)
+                size_lbl2_dl.grid(column=2, row=3, columnspan=2)
+                time_lbl2 = tk.Label(content_download, text=str(timestamp2))
+                time_lbl2.text = timestamp2
+                time_lbl2.grid(column=2, row=4, columnspan=2)
+                latStr_dl = 'latency: ' + str(round(oneLatency, 2)) + ' sec'
+                lat_lbl_dl = tk.Label(content_download, text=latStr_dl)
+                lat_lbl_dl.text = latStr_dl
+                lat_lbl_dl.grid(column=2, row=5, columnspan=2)
                 # create download buttons
                 download_btn_2 = tk.Button(content_download, text='Download '
                                                                   'Processed',
                                            width=20, command=lambda:
                                                downloadPhoto(content_download,
                                                              PILdl, procName))
-                download_btn_2.grid(column=2, row=3, pady=10)
+                download_btn_2.grid(column=2, row=6, pady=10)
             except:  # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read f"
                           "ile\n'%s'" % procName)
