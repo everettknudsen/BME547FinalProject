@@ -54,7 +54,7 @@ You will be asked if you would like to upload or download. Choose one.
 * [README.md](https://github.com/everettknudsen/BME547FinalProject/blob/master/README.md)
 * Link to [Image Processing Server-Server On Page](http://vcm-9066.vm.duke.edu:5000/)
 * Tagged project code: [BME547FinalProject](https://github.com/everettknudsen/BME547FinalProject/tree/master)
-* Demo Video: [Image Processor Video]()
+* Demo Video: [Image Processor Video](https://youtu.be/OIZSZuLOXlo)
 ### Future improvements
 * Capability to handle multiple files or .zip files
 * Decrease time latency for log compression and reverse video (better processing algorithms)
