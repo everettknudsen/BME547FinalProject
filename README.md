@@ -36,7 +36,6 @@ Normal and processed images are separated from one another in the database to al
 
 ### Future improvements
 * Capability to handle .zip files
-* Sphinx documentation
 
 ## Notes
 ### Troubleshooting
