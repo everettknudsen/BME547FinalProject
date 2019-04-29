@@ -291,3 +291,93 @@ def download_processed_img(email, photo_name, processType):
     # remove process type duplicates from list
     oneImg = list(dict.fromkeys(imgData))
     return oneImg[0]
+
+
+def get_time(email, photo_name):
+    """This function returns timestamp of upload for a normal image
+
+    Args:
+        email (string): user email for ID
+        photo_name (string): which photo to load processed options for
+
+    Returns:
+        timestamp (datetime.datetime): datetime object of upload time
+    """
+
+    returnObj = db.users.find({'_id': email},
+                              {'original_images.img_name': 1,
+                               'original_images.timestamp': 1, '_id': 0})
+    # below is a list of dictionaries that contain img name and img_data
+    origDictList = returnObj[0]['original_images']
+    # need to get img_data after filtering by img name we want
+    times = [entry['timestamp'] for entry in origDictList
+             if entry['img_name'] == photo_name]
+    # remove process type duplicates from list
+    timestamp = list(dict.fromkeys(times))
+    return timestamp[0]
+
+
+def get_time_pro(email, photo_name, processType):
+    """This function returns timestamp for a processed image
+
+    Args:
+        email (string): user email for ID
+        photo_name (string): which photo to load timestamp for
+        processType (string): which process type to load
+
+    Returns:
+        timestamp (datetime.datetime): timestamp of img
+    """
+
+    returnObj = db.users.find({'_id': email},
+                              {'processed_images.img_name': 1,
+                               'processed_images.timestamp': 1,
+                               'processed_images.process_type': 1, '_id': 0})
+    # below is a list of dictionaries that contain img name and img_data
+    procDictList = returnObj[0]['processed_images']
+    # need to get img_data after filtering by img name we want
+    # processType looks like img1_rv.jpg because of button updates
+    # lets strip it to just the 'rv'
+    nameNoExt = os.path.splitext(photo_name)[0]
+    ext = os.path.splitext(photo_name)[1]
+    process = processType.replace(nameNoExt+'_', '')
+    process = process.replace(ext, '')
+    imgData = [entry['timestamp'] for entry in procDictList
+               if (entry['img_name'] == photo_name and
+                   entry['process_type'] == process)]
+    # remove process type duplicates from list
+    times = list(dict.fromkeys(imgData))
+    return times[0]
+
+
+def get_latency(email, photo_name, processType):
+    """This function returns latency for a processed image
+
+    Args:
+        email (string): user email for ID
+        photo_name (string): which photo to load latency for
+        processType (string): which process type to load
+
+    Returns:
+        latency (float): latency value
+    """
+
+    returnObj = db.users.find({'_id': email},
+                              {'processed_images.img_name': 1,
+                               'processed_images.latency': 1,
+                               'processed_images.process_type': 1, '_id': 0})
+    # below is a list of dictionaries that contain img name and img_data
+    procDictList = returnObj[0]['processed_images']
+    # need to get img_data after filtering by img name we want
+    # processType looks like img1_rv.jpg because of button updates
+    # lets strip it to just the 'rv'
+    nameNoExt = os.path.splitext(photo_name)[0]
+    ext = os.path.splitext(photo_name)[1]
+    process = processType.replace(nameNoExt+'_', '')
+    process = process.replace(ext, '')
+    imgData = [entry['latency'] for entry in procDictList
+               if (entry['img_name'] == photo_name and
+                   entry['process_type'] == process)]
+    # remove process type duplicates from list
+    latencies = list(dict.fromkeys(imgData))
+    return latencies[0]
