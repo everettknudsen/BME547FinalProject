@@ -29,7 +29,6 @@ class users(MongoModel):
     For original_images, he_images..., the inputs will be
     a tuple containing the image name as a string and the image data
     also as a longer base64 string.
-
     """
     email = fields.CharField(required=True, primary_key=True)
     original_images = fields.ListField()
@@ -56,8 +55,9 @@ def add_new_user(email):
     This function initializes a user in
     the image database before any
     images are uploaded.
-    :param email: Email argument input into the GUI
-    :return:
+
+    Args:
+        email: Email argument input into the GUI
     """
     user = users(email=email,
                  he_count=0,
@@ -73,8 +73,12 @@ def get_one_user(email):
     This function will pull all the data for a given user
     and put it into a dictionary which can then be used in other
     modules.
-    :param email: Email input from the GUI.
-    :return: returns the populated user_dictionary
+
+    Args:
+        email: Email input from the GUI.
+
+    Returns:
+        dict: returns the populated user_dictionary
     """
     try:
         user = db.users.find_one({"_id": email})
@@ -96,12 +100,16 @@ def print_users():
 def new_image_added(email, upload_package):
     """
     This function will take in a dictionary which contains the
-     image name, the image data, and, the processing action.
-     It will then.
-    :param image_dict: A dictionary from the post request
+    image name, the image data, and, the processing action.
+    It will then.
+
+    Args:
+        image_dict: A dictionary from the post request
     that contains the image name, the image data, and the processing
     action to be performed.
-    :return:
+
+    Returns:
+        string: status message
     """
 
     try:
@@ -133,11 +141,14 @@ def new_image_added_pro(email, upload_package):
      processed image name, the processed image data, and, the processing
      action. It will then save the processed image data to the correct
      field in the MongoDB.
-    :param email: Email corresponding to the user.
-    :param upload_package:  A dictionary from the post request
-    that contains the processed image name, the processed image data, and
-    the processing action to be performed.
-    :return: A status message and a status code.
+
+    Args:
+        email: Email corresponding to the user.
+        upload_package:  A dictionary from the post request
+        that contains the processed image name, the processed image data, and
+        the processing action to be performed.
+    Returns:
+        sttring: A status message
     """
 
     try:
