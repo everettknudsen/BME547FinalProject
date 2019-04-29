@@ -20,7 +20,8 @@ Original image data will always be stored in the database on upload. When upload
 Image data for processed images is only stored for the chosen option. Later, the user may choose to download a processed image. We retrieve the image data and prepare it to be downloaded at that point.
 After the user browses for a photo, the original photo and processed photo are displayed side-by-side. The user can then toggle between processing methods by clicking a bubble button.
 Histograms of the pixel values are also displayed for uploaded images on the upload screen.
-* View metrics?
+Metrics such as timestamp of upload, image size, and latency associated with processing are displayed alongside original and processed images. The user can then recall what date he or she uploaded or processed an image using this information. 
+
 ##### Image Conversion and Storage
 In order to be sent to the server and database, images are passed through a series of conversions to ultimately be stored as strings. Images are initially uploaded in Python Imaging Library (PIL) format, which are easily implemented in the GUI. Subsequently, images are converted to `numpy` arrays, encoded in base64 and stored as strings.
 
@@ -32,11 +33,16 @@ The images can be downloaded as `.jpg`, `.png` or `.tiff` files.
 ### Database structure
 Normal and processed images are separated from one another in the database to allow for ease of querying the database should the user wish to download a previously processed imaged in the future. It also allows for the user to retain their initial image and makes comparative display easier on the back end.
 
-`MongoDB `, an extremely popular database service, was used to construct the database for this image processor. Each user has a unique entry within the larger database based on the email. Email was chosen because it is unique to the user. For example, while could be different users with the last name Smith, only one user can have the email `stan_the_duke_fan@gmail.com`. Within each user, we keep running lists of dictionaries containing image information. Images are stored with the name of the image as a key and the image data as a value. Other keys contain metrics such as upload timestamp, latency (for processed images), file size, and processing type. Structuring the database with lists of dictionaries made it easy to append values each time a user added an image.
+`MongoDB`, an extremely popular database service, was used to construct the database for this image processor. Each user has a unique entry within the larger database based on the email. Email was chosen because it is unique to the user. For example, while could be different users with the last name Smith, only one user can have the email `stan_the_duke_fan@gmail.com`. Within each user, we keep running lists of dictionaries containing image information. Images are stored with the name of the image as a key and the image data as a value. Other keys contain metrics such as upload timestamp, latency (for processed images), file size, and processing type. Structuring the database with lists of dictionaries made it easy to append values each time a user added an image.
 
+### Deliverables
+* [README.md](https://github.com/everettknudsen/BME547FinalProject/blob/master/README.md)
+* Link to [Image Processing Server-Server On Page](http://vcm-9066.vm.duke.edu:5000/)
+* Tagged project code: [BME547FinalProject](https://github.com/everettknudsen/BME547FinalProject/tree/master)
 ### Future improvements
 * Capability to handle multiple files or .zip files
-* Decrease time latency for log compression and reverse video
+* Decrease time latency for log compression and reverse video (better processing algorithms)
+* Capability to handle .zip files
 
 ## Notes
 ### Troubleshooting
