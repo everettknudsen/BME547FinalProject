@@ -277,7 +277,7 @@ def uploadScreen():
                 imgHist2 = histo.hist2(processedImg)
                 wh2, hh2 = imgHist2.size
                 resizedh2 = imgHist2.resize((100, int(hh2*(100/wh2))),
-                                          Image.ANTIALIAS)
+                                            Image.ANTIALIAS)
                 imgTkh2 = ImageTk.PhotoImage(resizedh2)
                 showUploadh2 = tk.Label(content_upload, image=imgTkh2)
                 showUploadh2.image = imgTkh2
@@ -452,7 +452,7 @@ def uploadScreen():
         imgHist2 = histo.hist2(processedImg)
         wh2, hh2 = imgHist2.size
         resizedh2 = imgHist2.resize((100, int(hh2*(100/wh2))),
-                                  Image.ANTIALIAS)
+                                    Image.ANTIALIAS)
         imgTkh2 = ImageTk.PhotoImage(resizedh2)
         showUploadh2 = tk.Label(content_upload, image=imgTkh2)
         showUploadh2.image = imgTkh2
@@ -711,7 +711,7 @@ def downloadScreen():
                 imgHist2 = histo.hist2(PILdl)
                 wh2, hh2 = imgHist2.size
                 resizedh2 = imgHist2.resize((100, int(hh2*(100/wh2))),
-                                          Image.ANTIALIAS)
+                                            Image.ANTIALIAS)
                 imgTkh2 = ImageTk.PhotoImage(resizedh2)
                 showUploadh2 = tk.Label(content_download, image=imgTkh2)
                 showUploadh2.image = imgTkh2
