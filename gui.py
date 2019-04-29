@@ -411,6 +411,18 @@ def downloadPressed(mainMenuWindow):
 
 
 def downloadScreen():
+    """Download Screen for downloading photos.
+
+    Contains an initial dropdown menu that is populated by the unique original
+    images that a user has uploaded. Once they select a normal_image, that
+    image will be displayed and then another dropdown list will appear,
+    populated by the versions of the original image that the use has
+    processed during uploads. Once selected, the processed image will appear as
+    well. Both images have individual download buttons that prompt a folder to
+    download to using the image's filename. On download press, a success
+    window will appear if successful and prompt the user if they wish to return
+    to menu or download another image.
+    """
     # carry out a GET request based on username to get list of photo originals
     root.title('Downloading')
     content_download = tk.Frame(root)
@@ -456,6 +468,9 @@ def downloadScreen():
     def change_dropdown(*args):
         """Function called when dropdown of image is changed. Displays the
         image.
+        
+        Args:
+            *args: takes tk.OptionMenu values and updates correspondingly
         """
         nonlocal imageName_normal, w, h
         """
@@ -492,6 +507,14 @@ def downloadScreen():
     imageName_normal.trace('w', change_dropdown)
 
     def downloadPhoto(downloadWindow, img, filename):
+        """
+
+        Args:
+            downloadWindow (tk.Frame): frame to be destroyed potentially
+            img (PIL Image Format): image to be downloaded
+            filename (str): string for corresponding image that will be the
+            savefile name
+        """
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
         # ext = os.path.splitext(imageName_normal.get())[1]
         saveDir = askdirectory()
@@ -513,6 +536,10 @@ def downloadScreen():
         lbl3_down.grid(column=1, row=1, pady=20)
 
     def processedOptions():
+        """Populates the second OptionMenu dropdown list using a list of
+        processed images. Performs a GET request to get the list of images
+        using email and image_name
+        """
         nonlocal imageName_normal
         normImg_str = imageName_normal.get()
         nameNoExt = os.path.splitext(normImg_str)[0]
@@ -546,7 +573,11 @@ def downloadScreen():
         # when dropdown value changes, do this
         def change_dropdownProcessed(*args):
             """Function called when dropdown of image is changed. Displays the
-            processed image and makes available to download.
+            image. Uses a get request with email, image_name, and processType
+            to determine which img_data to acquire
+
+            Args:
+                *args: takes tk.OptionMenu values and updates correspondingly
             """
             nonlocal processType, w2, h2, imageName_normal
             imName = imageName_normal.get()
@@ -669,6 +700,11 @@ def contrastStretch(pilImg):
 
 
 def logCompression(pilImg):
+    """Does log compression processing on a photo
+
+    Args:
+        pilImg (PIL Image format image): Image to be processed
+    """
     npImg = PILtoNumpy(pilImg)
     c = 255 / (np.log10(1 + np.amax(npImg)))
     for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
@@ -677,6 +713,11 @@ def logCompression(pilImg):
 
 
 def reverseVideo(pilImg):
+    """Does reverse video (negative) processing on a photo
+
+    Args:
+        pilImg (PIL Image format image): Image to be processed
+    """
     npImg = PILtoNumpy(pilImg)
     for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
         all_pixels[...] = 255 - all_pixels
