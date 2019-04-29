@@ -4,7 +4,7 @@
 Our program creates an image processor that interacts with a server and database and implements a GUI. The original images and their corresponding processed images are stored in a Mongo database. The user can upload images and choose to apply an image processing method if desired. The original and processed images can later be downloaded if desired.
 
 ### User instructions
-To start the program, run the `gui.py` code locally.
+To start the program, run the `gui.py` code locally.  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`http://jek42@vcm-9066.vm.duke.edu:5000`
 
 #### Login
