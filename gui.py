@@ -478,13 +478,15 @@ def downloadScreen():
         filename = imageName_normal.get()
         fname = dirPath + filename
         """
+        imName = imageName_normal.get()
         rDown = requests.get(local_url+'/api/'+email+'/'
-                             ''+imageName_normal.get()+'/get_image')
+                             ''+imName+'/get_image')
         imgStr_download = rDown.json()
-        imgPIL_download = Image.fromarray(decode_image_from_b64(imgStr_download))
+        decodedDL_norm = CODER.decode_image_from_b64(imgStr_download)
+        PILdl_norm = Image.fromarray(decodedDL_norm)
         try:
-            w, h = imgPIL_download.size
-            resized = imgPIL_download.resize((100, int(h*(100/w))),
+            w, h = PILdl_norm.size
+            resized = PILdl_norm.resize((100, int(h*(100/w))),
                                              Image.ANTIALIAS)
             imgTk = ImageTk.PhotoImage(resized)
             showDownload = tk.Label(content_download, image=imgTk)
@@ -494,17 +496,17 @@ def downloadScreen():
             download_btn_1 = tk.Button(content_download, text='Download '
                                                               'Original',
                                        width=20, command=lambda:
-                                           downloadOrig(content_download,
-                                                        img, filename))
+                                           downloadPhoto(content_download,
+                                                         PILdl_norm, imName))
             download_btn_1.grid(column=0, row=3, pady=10)
         except:  # <- naked except is a bad idea
-            showerror("Open Source File", "Failed to read file\n'%s'" % fname)
+            showerror("Open Source File", "Failed to read file\n'%s'" % imName)
         return
 
     # link function to change dropdown
     imageName_normal.trace('w', change_dropdown)
 
-    def downloadOrig(downloadWindow, img, filename):
+    def downloadPhoto(downloadWindow, img, filename):
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
         # ext = os.path.splitext(imageName_normal.get())[1]
         print("downloading original to local")
@@ -545,7 +547,39 @@ def downloadScreen():
 
         # when dropdown value changes, do this
         def change_dropdownProcessed(*args):
-            print(processType.get())
+            """Function called when dropdown of image is changed. Displays the
+            processed image and makes available to download.
+            """
+            nonlocal processType, w2, h2, imageName_normal
+            imName = imageName_normal.get()
+            nameNoExt = os.path.splitext(imName)[0]
+            ext = os.path.splitext(imName)[1]
+            procName = nameNoExt+'_'+processType.get()+ext
+            rDown_pro = requests.get(local_url+'/api/'+email+'/'
+                                 ''+imageName_normal.get()+'/get_image_pro_'
+                                 ''+processType.get())
+            imgStr_download_pro = rDown_pro.json()
+            decodedDL = CODER.decode_image_from_b64(imgStr_download_pro)
+            PILdl = Image.fromarray(decodedDL)
+            try:
+                w2, h2 = PILdl.size
+                resized_pro = PILdl.resize((100, int(h2*(100/w2))),
+                                           Image.ANTIALIAS)
+                imgTk_pro = ImageTk.PhotoImage(resized_pro)
+                showDownload_pro = tk.Label(content_download, image=imgTk_pro)
+                showDownload_pro.image = imgTk_pro
+                showDownload_pro.grid(column=2, row=1, columnspan=2, rowspan=2)
+                # create download buttons
+                download_btn_2 = tk.Button(content_download, text='Download '
+                                                                  'Processed',
+                                           width=20, command=lambda:
+                                               downloadPhoto(content_download,
+                                                             PILdl, procName))
+                download_btn_2.grid(column=2, row=3, pady=10)
+            except:  # <- naked except is a bad idea
+                showerror("Open Source File", "Failed to read f"
+                          "ile\n'%s'" % procName)
+            return
 
         # link function to change dropdown
         processType.trace('w', change_dropdownProcessed)

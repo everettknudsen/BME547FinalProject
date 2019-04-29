@@ -1,6 +1,7 @@
 from pymodm import fields, MongoModel, connect
 from pymongo import MongoClient
 
+import os
 import datetime
 import logging
 from flask import Flask, jsonify
@@ -234,8 +235,7 @@ def processed_images(email, photo_name):
 
 
 def download_normal_img(email, photo_name):
-    """This function simply returns a list of processed images (unique)
-    for a user
+    """This function returns img_data for a normal image
 
     Args:
         email (string): user email for ID
@@ -256,4 +256,38 @@ def download_normal_img(email, photo_name):
     # remove process type duplicates from list
     oneImg = list(dict.fromkeys(imgData))
     return oneImg[0]
-    
+
+
+def download_processed_img(email, photo_name, processType):
+    """This function returns image data for a processed image given normal
+    image name
+
+    Args:
+        email (string): user email for ID
+        photo_name (string): which photo to load processed data for
+        processType (string): which process type to load
+        
+
+    Returns:
+        photoString (str): string of encoded photo data
+    """
+
+    returnObj = db.users.find({'_id': email},
+                              {'processed_images.img_name': 1,
+                               'processed_images.img_data_processed': 1,
+                               'processed_images.process_type': 1, '_id': 0})
+    # below is a list of dictionaries that contain img name and img_data
+    procDictList = returnObj[0]['processed_images']
+    # need to get img_data after filtering by img name we want
+
+    # processType looks like img1_rv.jpg because of button updates
+    # lets strip it to just the 'rv'
+    nameNoExt = os.path.splitext(photo_name)[0]
+    ext = os.path.splitext(photo_name)[1]
+    process = processType.strip(nameNoExt+'_'+ext)
+    imgData = [entry['img_data_processed'] for entry in procDictList
+                    if (entry['img_name'] == photo_name and
+                        entry['process_type'] == process)]
+    # remove process type duplicates from list
+    oneImg = list(dict.fromkeys(imgData))
+    return oneImg[0]

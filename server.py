@@ -147,15 +147,32 @@ def pull_image_list(image_dict):
 
 @app.route('/api/<email>/<img_name>/get_image', methods=['GET'])
 def get_image(email, img_name):
-    """Pulls up image name and data when chosen from dropdown menu
+    """Pulls up image data when chosen from dropdown menu
 
     Args:
         user (str): user email (primary key)
         img_name (str): name of desired image
 
     Returns:
+        img_data (str): encoded image
     """
     img_data = mdb.download_normal_img(email, img_name)
+    return jsonify(img_data)
+
+
+@app.route('/api/<email>/<img_name>/get_image_pro_<processType>', methods=['GET'])
+def get_image_pro(email, img_name, processType):
+    """Pulls up image name and data when chosen from dropdown menu
+
+    Args:
+        user (str): user email (primary key)
+        img_name (str): name of desired image
+        processType (str): process type of image to load
+
+    Returns:
+        img_data (str): encoded processed image
+    """
+    img_data = mdb.download_processed_img(email, img_name, processType)
     return jsonify(img_data)
 
 
