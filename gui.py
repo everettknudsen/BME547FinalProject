@@ -25,8 +25,8 @@ import datetime
 
 
 global email
-local_url = 'http://127.0.0.1:5000'
-# server = 'http://jek42@vcm-9066.vm.duke.edu:5000'
+# local_url = 'http://127.0.0.1:5000'
+local_url = 'http://jek42@vcm-9066.vm.duke.edu:5000'
 
 
 def json_serial_date(obj):
