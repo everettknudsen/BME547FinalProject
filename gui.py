@@ -40,7 +40,12 @@ if __name__ == '__main__':
 
 
 def json_serial_date(obj):
-    """JSON serializer for objects not serializable by default json code"""
+    """JSON serializer for objects not serializable by default json code
+
+    Args:
+        obj: a json-serializable object
+
+    """
 
     if isinstance(obj, (datetime.datetime, datetime.date)):
         return obj.isoformat()
@@ -225,7 +230,7 @@ def uploadScreen():
         """
         nonlocal fname, img, processedImg, latency, w, h, w2, h2
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;"
-                                            "*.tiff;.*tif;*.png;"),
+                                                           "*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*")))
 
         if fname.lower().endswith(('.jpeg', '.jpg', '.tiff', '.tif', '.png')):
@@ -233,7 +238,7 @@ def uploadScreen():
             try:
                 img = Image.open(fname)
                 w, h = img.size
-                resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+                resized = img.resize((100, int(h * (100 / w))), Image.ANTIALIAS)
                 imgTk = ImageTk.PhotoImage(resized)
                 showUpload = tk.Label(content_upload, image=imgTk)
                 showUpload.image = imgTk
@@ -244,15 +249,15 @@ def uploadScreen():
                 preProcessTime = datetime.datetime.now()
                 processedImg = histEQ(img)
                 postProcessTime = datetime.datetime.now()
-                latency = (postProcessTime-preProcessTime).total_seconds()
+                latency = (postProcessTime - preProcessTime).total_seconds()
                 w2, h2 = processedImg.size
-                resizeProcess = processedImg.resize((100, int(h*(100/w))),
+                resizeProcess = processedImg.resize((100, int(h * (100 / w))),
                                                     Image.ANTIALIAS)
                 imgTkprocessed = ImageTk.PhotoImage(resizeProcess)
                 showProcessed = tk.Label(content_upload, image=imgTkprocessed)
                 showProcessed.image = imgTkprocessed
                 showProcessed.grid(column=2, row=1, columnspan=2, rowspan=2)
-            except:                     # <- naked except is a bad idea
+            except:  # <- naked except is a bad idea
                 showerror("Open Source File",
                           "Failed to read file\n'%s'" % fname)
         else:
@@ -326,7 +331,7 @@ def uploadScreen():
                               'img_size': [w, h],
                               'timestamp': serialDate}
 
-            r = requests.post(local_url+'/api/'+email+'/post_new_image',
+            r = requests.post(local_url + '/api/' + email + '/post_new_image',
                               json=upload_package)
             print("response", r)
             # create processed package
@@ -338,7 +343,7 @@ def uploadScreen():
                                         'timestamp': serialDate,
                                         'latency': latency}
 
-            r2 = requests.post(local_url+'/api/'+email+'/post_new_image_pro',
+            r2 = requests.post(local_url + '/api/' + email + '/post_new_image_pro',
                                json=upload_package_processed)
             print("response", r2)
 
@@ -352,11 +357,11 @@ def uploadScreen():
                 lbl_suc.grid(column=0, row=0, columnspan=2)
                 lbl2_suc = tk.Button(submitSuccess, text='Return to Main Menu',
                                      width=20, command=lambda:
-                                     returnToMenu_uploadSucc(submitSuccess,
-                                                             uploadWindow))
+                    returnToMenu_uploadSucc(submitSuccess,
+                                            uploadWindow))
                 lbl2_suc.grid(column=0, row=1, pady=20)
                 lbl3_suc = tk.Button(submitSuccess, text='Upload Another'
-                                     'Photo or Process', width=30,
+                                                         'Photo or Process', width=30,
                                      command=lambda:
                                      returnToUpload_uploadSucc(submitSuccess))
                 lbl3_suc.grid(column=1, row=1, pady=20)
@@ -380,30 +385,30 @@ def uploadScreen():
             preProcessTime = datetime.datetime.now()
             processedImg = histEQ(img)
             postProcessTime = datetime.datetime.now()
-            latency = (postProcessTime-preProcessTime).total_seconds()
+            latency = (postProcessTime - preProcessTime).total_seconds()
         elif processType == 'cs':
             img = Image.open(fname)
             preProcessTime = datetime.datetime.now()
             processedImg = contrastStretch(img)
             postProcessTime = datetime.datetime.now()
-            latency = (postProcessTime-preProcessTime).total_seconds()
+            latency = (postProcessTime - preProcessTime).total_seconds()
         elif processType == 'lc':
             img = Image.open(fname)
             preProcessTime = datetime.datetime.now()
             processedImg = logCompression(img)
             postProcessTime = datetime.datetime.now()
-            latency = (postProcessTime-preProcessTime).total_seconds()
+            latency = (postProcessTime - preProcessTime).total_seconds()
         elif processType == 'rv':
             img = Image.open(fname)
             preProcessTime = datetime.datetime.now()
             processedImg = reverseVideo(img)
             postProcessTime = datetime.datetime.now()
-            latency = (postProcessTime-preProcessTime).total_seconds()
+            latency = (postProcessTime - preProcessTime).total_seconds()
         else:
             print('no process selected')
             return
         w2, h2 = processedImg.size
-        resizeProcess = processedImg.resize((100, int(h*(100/w))),
+        resizeProcess = processedImg.resize((100, int(h * (100 / w))),
                                             Image.ANTIALIAS)
         imgTkprocessed = ImageTk.PhotoImage(resizeProcess)
         showProcessed = tk.Label(content_upload, image=imgTkprocessed)
@@ -436,9 +441,16 @@ def downloadScreen():
                                text='Choose a uploaded photo')
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
+<<<<<<< HEAD
     r = requests.get(local_url+'/api/'+email+'/get_image_list')
     imageList = r.json()
 
+=======
+    r = requests.get(local_url + '/api/' + email + '/get_image_list')
+    print('gui code download list type', type(r), r)
+    # populate a dictionary with image choices
+    choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
+>>>>>>> d5656e62e5d894f289042336bba0ca1d37176b08
     imageName_normal = tk.StringVar()
 
     # if no images for this user
@@ -456,7 +468,7 @@ def downloadScreen():
     # create a back button
     back_btn = tk.Button(content_download, text='Back to Menu', width=20,
                          command=lambda:
-                             returnToMenu_download(content_download))
+                         returnToMenu_download(content_download))
     # add padding for button
     back_btn.grid(column=0, row=5, pady=30)
 
@@ -478,7 +490,7 @@ def downloadScreen():
         try:
             img = Image.open(fname)
             w, h = img.size
-            resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+            resized = img.resize((100, int(h * (100 / w))), Image.ANTIALIAS)
             imgTk = ImageTk.PhotoImage(resized)
             showDownload = tk.Label(content_download, image=imgTk)
             showDownload.image = imgTk
@@ -487,8 +499,8 @@ def downloadScreen():
             download_btn_1 = tk.Button(content_download, text='Download '
                                                               'Original',
                                        width=20, command=lambda:
-                                           downloadOrig(content_download,
-                                                        img, filename))
+                downloadOrig(content_download,
+                             img, filename))
             download_btn_1.grid(column=0, row=3, pady=10)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % fname)
@@ -498,6 +510,16 @@ def downloadScreen():
     imageName_normal.trace('w', change_dropdown)
 
     def downloadOrig(downloadWindow, img, filename):
+        """
+
+        :param downloadWindow: Specifies the download screen which will
+        pop up when called.
+        :param img: Takes an image file of encoded base64 string to be
+        downloaded to the local machine.
+        :param filename: Filename that the image will be saved as
+        when it is downloaded.
+        :return:
+        """
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
         # ext = os.path.splitext(imageName_normal.get())[1]
         print("downloading original to local")
@@ -506,6 +528,11 @@ def downloadScreen():
         return
 
     def processedOptions():
+        """
+        Will open a window with process options of histogram equalization,
+        contrast stretching, log compression, and reverse video.
+        :return: Nothing to return
+        """
         nonlocal imageName_normal
         nameNoExt = os.path.splitext(imageName_normal.get())[0]
         ext = os.path.splitext(imageName_normal.get())[1]
@@ -516,7 +543,7 @@ def downloadScreen():
         # get all images names that start with imageName_normal
         choicesProcessed = {nameNoExt + '_he' + ext, nameNoExt + '_cs' + ext}
         imageName_processed = tk.StringVar()
-        imageName_processed.set(nameNoExt+'_he'+ext)  # set default option
+        imageName_processed.set(nameNoExt + '_he' + ext)  # set default option
 
         # give further instructions
         instruction_lbl2 = tk.Label(content_download,
@@ -529,6 +556,13 @@ def downloadScreen():
 
         # when dropdown value changes, do this
         def change_dropdownProcessed(*args):
+            """
+            A function to change the dropdown menu to display the
+            processed image options.
+
+            :param args:
+            :return:
+            """
             print(imageName_processed.get())
 
         # link function to change dropdown
@@ -593,7 +627,12 @@ def contrastStretch(pilImg):
     return NumpytoPIL(exposure.rescale_intensity(npImg, in_range=(p30, p70)))
 
 
-def logCompression(pilImg):
+def logCompression(npImg):
+    """
+    A function which performs log compression on an image.
+    :param npImg: Takes an image in the form of an np array.
+    :return: returns the PIL image of the lc np array.
+    """
     c = 255 / (np.log10(1 + np.amax(npImg)))
     for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
         all_pixels[...] = c * np.log10(1 + all_pixels)
@@ -601,12 +640,21 @@ def logCompression(pilImg):
 
 
 def reverseVideo(pilImg):
+    """
+    A function that performs reverse video on an image.
+    :param pilImg: Takes an image as a numpy array.
+    :return: returns the reverse video image as PIL
+    """
     npImg = PILtoNumpy(pilImg)
     for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
         all_pixels[...] = 255 - all_pixels
     return NumpytoPIL(npImg)
 
 
+<<<<<<< HEAD
+=======
+root = tk.Tk()
+>>>>>>> d5656e62e5d894f289042336bba0ca1d37176b08
 email = ''
 root = ''
 if __name__ == "__main__":
