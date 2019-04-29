@@ -252,7 +252,7 @@ def download_normal_img(email, photo_name):
     origDictList = returnObj[0]['original_images']
     # need to get img_data after filtering by img name we want
     imgData = [entry['img_data'] for entry in origDictList
-                    if entry['img_name'] == photo_name]
+               if entry['img_name'] == photo_name]
     # remove process type duplicates from list
     oneImg = list(dict.fromkeys(imgData))
     return oneImg[0]
@@ -266,7 +266,6 @@ def download_processed_img(email, photo_name, processType):
         email (string): user email for ID
         photo_name (string): which photo to load processed data for
         processType (string): which process type to load
-        
 
     Returns:
         photoString (str): string of encoded photo data
@@ -284,15 +283,11 @@ def download_processed_img(email, photo_name, processType):
     # lets strip it to just the 'rv'
     nameNoExt = os.path.splitext(photo_name)[0]
     ext = os.path.splitext(photo_name)[1]
-    print('namenoext:',nameNoExt, ' ext:', ext)
     process = processType.replace(nameNoExt+'_', '')
-    print('finding1', process, 'type', processType)
     process = process.replace(ext, '')
-    print('finding: ', process, ' after', ext)
     imgData = [entry['img_data_processed'] for entry in procDictList
-                    if (entry['img_name'] == photo_name and
-                        entry['process_type'] == process)]
-    print(len(imgData))
+               if (entry['img_name'] == photo_name and
+                   entry['process_type'] == process)]
     # remove process type duplicates from list
     oneImg = list(dict.fromkeys(imgData))
     return oneImg[0]

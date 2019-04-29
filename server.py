@@ -160,7 +160,8 @@ def get_image(email, img_name):
     return jsonify(img_data)
 
 
-@app.route('/api/<email>/<img_name>/get_image_pro_<processType>', methods=['GET'])
+@app.route('/api/<email>/<img_name>/get_image_pro_<processType>',
+           methods=['GET'])
 def get_image_pro(email, img_name, processType):
     """Pulls up image data when chosen from dropdown menu
 

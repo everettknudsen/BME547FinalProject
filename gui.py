@@ -269,7 +269,7 @@ def uploadScreen():
         destroyWindow(uploadWindow)
         mainMenuScreen()
 
-    def returnToUpload_uploadSucc(successWindow):
+    def returnToUpload_upSucc(successWindow):
         """Helper function for a button to move back from upload success
         screen to Upload screen. Preserves previously selected image, but
         allows new images to be selected.
@@ -312,19 +312,18 @@ def uploadScreen():
                                   json=upload_package)
                 print("response", r)
                 # create processed package
-                enc_img_pro = CODER.encode_image_as_b64(np.asarray(processedImg))
+                npIMGshort = np.asarray(processedImg)
+                enc_img_pro = CODER.encode_image_as_b64(npIMGshort)
                 upload_package_processed = {'img_name': img_name,
                                             'img_data_processed': enc_img_pro,
                                             'img_size_processed': [w2, h2],
                                             'process_type': process.get(),
                                             'timestamp': serialDate,
                                             'latency': latency}
-    
                 r2 = requests.post(local_url+'/api/'+email+'/post_new_'
                                    'image_pro',
                                    json=upload_package_processed)
                 print("response", r2)
-    
                 if (r.content == 500 or r2.content == 500):
                     print("failed to add to MONGO, try again.")
                 else:
@@ -333,7 +332,8 @@ def uploadScreen():
                     lbl_suc = tk.Label(submitSuccess,
                                        text='Successfully Submitted Photo')
                     lbl_suc.grid(column=0, row=0, columnspan=2)
-                    lbl2_suc = tk.Button(submitSuccess, text='Return to Main Menu',
+                    lbl2_suc = tk.Button(submitSuccess, text='Return t'
+                                         'o Main Menu',
                                          width=20, command=lambda:
                                          returnToMenu_uploadSucc(submitSuccess,
                                                                  uploadWindow))
@@ -341,11 +341,10 @@ def uploadScreen():
                     lbl3_suc = tk.Button(submitSuccess, text='Upload Another'
                                          'Photo or Process', width=30,
                                          command=lambda:
-                                         returnToUpload_uploadSucc(submitSuccess))
+                                         returnToUpload_upSucc(submitSuccess))
                     lbl3_suc.grid(column=1, row=1, pady=20)
             except pymongo.errors.WriteError:
                 print('database full')
-                
         else:
             print('havent chosen photo')
 
@@ -465,15 +464,15 @@ def downloadScreen():
         fname = dirPath + filename
         """
         imName = imageName_normal.get()
-        rDown = requests.get(local_url+'/api/'+email+'/'
-                             ''+imName+'/get_image')
+        rDown = requests.get(local_url + '/api/' + email + '/'
+                             '' + imName + '/get_image')
         imgStr_download = rDown.json()
         decodedDL_norm = CODER.decode_image_from_b64(imgStr_download)
         PILdl_norm = Image.fromarray(decodedDL_norm)
         try:
             w, h = PILdl_norm.size
             resized = PILdl_norm.resize((100, int(h*(100/w))),
-                                             Image.ANTIALIAS)
+                                        Image.ANTIALIAS)
             imgTk = ImageTk.PhotoImage(resized)
             showDownload = tk.Label(content_download, image=imgTk)
             showDownload.image = imgTk
@@ -500,17 +499,17 @@ def downloadScreen():
         downloadSuccess = tk.Toplevel(downloadWindow)
         # submitSucess.geometry("400x150")  # (optional)
         lbl_down = tk.Label(downloadSuccess,
-                           text='Successfully Downloaded Photo: '+filename)
+                            text='Successfully Downloaded Photo: ' + filename)
         lbl_down.grid(column=0, row=0, columnspan=2)
         lbl2_down = tk.Button(downloadSuccess, text='Return to Main Menu',
-                             width=20, command=lambda:
-                             returnToMenu_downloadSucc(downloadSuccess,
-                                                     downloadWindow))
+                              width=20, command=lambda:
+                              returnToMenu_downloadSucc(downloadSuccess,
+                                                        downloadWindow))
         lbl2_down.grid(column=0, row=1, pady=20)
         lbl3_down = tk.Button(downloadSuccess, text='Download Another'
-                             'Photo or Process', width=30,
-                             command=lambda:
-                             returnToDownload_downloadSucc(downloadSuccess))
+                              'Photo or Process', width=30,
+                              command=lambda:
+                              returnToDownload_downloadSucc(downloadSuccess))
         lbl3_down.grid(column=1, row=1, pady=20)
 
     def processedOptions():
@@ -522,8 +521,8 @@ def downloadScreen():
         # use this sublist to populate choicesProcessed dictionary
         # secondary dropdown that populates once normal image selected
         # get all images names that start with imageName_normal
-        rr = requests.get(local_url+'/api/'+email+'/get_image_list_pro_'
-                         +normImg_str)
+        rr = requests.get(local_url+'/api/' + email + '/get_image_list_pro'
+                          '_' + normImg_str)
         processedList = rr.json()
         displayList = [nameNoExt+'_'+item+ext for item in processedList]
         processType = tk.StringVar()
@@ -554,7 +553,8 @@ def downloadScreen():
             nameNoExt = os.path.splitext(imName)[0]
             ext = os.path.splitext(imName)[1]
             process = processType.get().replace(nameNoExt+'_', '')
-            process = process.replace(ext, '')            
+            process = process.replace(ext, '')
+            procName = nameNoExt+'_'+process+ext
             # print(procName)  # this is correct . displays im1_rv.jpg
             rDown_pro = requests.get(local_url+'/api/'+email+'/'+imName+'/get'
                                      '_image_pro_'+process)
