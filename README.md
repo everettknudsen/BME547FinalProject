@@ -35,8 +35,12 @@ Normal and processed images are separated from one another in the database to al
 `MongoDB`, an extremely popular database service, was used to construct the database for this image processor. Each user has a unique entry within the larger database based on the email. Email was chosen because it is unique to the user. For example, while could be different users with the last name Smith, only one user can have the email `stan_the_duke_fan@gmail.com`. Within each user, we keep running lists of dictionaries containing image information. Images are stored with the name of the image as a key and the image data as a value. Other keys contain metrics such as upload timestamp, latency (for processed images), file size, and processing type. Structuring the database with lists of dictionaries made it easy to append values each time a user added an image.
 
 ### Future improvements
+<<<<<<< HEAD
 * Capability to handle multiple files or .zip files
 * Decrease time latency for log compression and reverse video
+=======
+* Capability to handle .zip files
+>>>>>>> Committing before rebase
 
 ## Notes
 ### Troubleshooting
