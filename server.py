@@ -114,6 +114,24 @@ def get_image_list(email):
     return jsonify(mongo_image_list)
 
 
+@app.route('/api/<email>/get_image_list_pro_<image_name>', methods=['GET'])
+def get_image_list_pro(email, image_name):
+    """Obtains list of processed image titles from database based on non-
+    processed image name for use in compare dropdown menu
+
+    Args:
+        email (str): user email (primary key)
+        image_name (str): image name for which to load processed versions for
+
+    Returns:
+        image_list (list): list of unprocessed image  titles
+    """
+    # for user in User.objects.raw({}):
+    # image_dict = database['name']
+    mongo_image_list_pro = mdb.processed_images(email, image_name)
+    return jsonify(mongo_image_list_pro)
+
+
 def pull_image_list(image_dict):
     """MongoDB image dict for one user
 
@@ -129,16 +147,34 @@ def pull_image_list(image_dict):
 
 @app.route('/api/<email>/<img_name>/get_image', methods=['GET'])
 def get_image(email, img_name):
-    """Pulls up image name and data when chosen from dropdown menu
+    """Pulls up image data when chosen from dropdown menu
 
     Args:
         user (str): user email (primary key)
         img_name (str): name of desired image
 
     Returns:
+        img_data (str): encoded image
     """
-    img_data, metrics = pull_image(email, img_name)
-    return jsonify(img_name, img_data, metrics)
+    img_data = mdb.download_normal_img(email, img_name)
+    return jsonify(img_data)
+
+
+@app.route('/api/<email>/<img_name>/get_image_pro_<processType>',
+           methods=['GET'])
+def get_image_pro(email, img_name, processType):
+    """Pulls up image data when chosen from dropdown menu
+
+    Args:
+        user (str): user email (primary key)
+        img_name (str): name of desired image
+        processType (str): process type of image to load
+
+    Returns:
+        img_data (str): encoded processed image
+    """
+    img_data = mdb.download_processed_img(email, img_name, processType)
+    return jsonify(img_data)
 
 
 def pull_image(img_name):
@@ -253,3 +289,4 @@ def str2im(img):
 
 if __name__ == '__main__':
     app.run()
+    # app.run(host='0.0.0.0')
