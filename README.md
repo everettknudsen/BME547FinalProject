@@ -20,7 +20,8 @@ Original image data will always be stored in the database on upload. When upload
 Image data for processed images is only stored for the chosen option. Later, the user may choose to download a processed image. We retrieve the image data and prepare it to be downloaded at that point.
 After the user browses for a photo, the original photo and processed photo are displayed side-by-side. The user can then toggle between processing methods by clicking a bubble button.
 Histograms of the pixel values are also displayed for uploaded images on the upload screen.
-* View metrics?
+Metrics such as timestamp of upload, image size, and latency associated with processing are displayed alongside original and processed images. The user can then recall what date he or she uploaded or processed an image using this information. 
+
 ##### Image Conversion and Storage
 In order to be sent to the server and database, images are passed through a series of conversions to ultimately be stored as strings. Images are initially uploaded in Python Imaging Library (PIL) format, which are easily implemented in the GUI. Subsequently, images are converted to `numpy` arrays, encoded in base64 and stored as strings.
 
