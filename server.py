@@ -114,6 +114,24 @@ def get_image_list(email):
     return jsonify(mongo_image_list)
 
 
+@app.route('/api/<email>/get_image_list_pro_<image_name>', methods=['GET'])
+def get_image_list_pro(email, image_name):
+    """Obtains list of processed image titles from database based on non-
+    processed image name for use in compare dropdown menu
+
+    Args:
+        email (str): user email (primary key)
+        image_name (str): image name for which to load processed versions for
+
+    Returns:
+        image_list (list): list of unprocessed image  titles
+    """
+    # for user in User.objects.raw({}):
+    # image_dict = database['name']
+    mongo_image_list_pro = mdb.processed_images(email, image_name)
+    return jsonify(mongo_image_list_pro)
+
+
 def pull_image_list(image_dict):
     """MongoDB image dict for one user
 

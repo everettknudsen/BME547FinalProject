@@ -444,6 +444,7 @@ def downloadScreen():
     # if no images for this user
     if not imageList:
         choices = {'no images'}
+        imageName_normal.set('no_images')
     else:
         choices = imageList
         imageName_normal.set(imageList[0])  # set default option
@@ -507,32 +508,42 @@ def downloadScreen():
 
     def processedOptions():
         nonlocal imageName_normal
-        nameNoExt = os.path.splitext(imageName_normal.get())[0]
-        ext = os.path.splitext(imageName_normal.get())[1]
+        normImg_str = imageName_normal.get()
+        nameNoExt = os.path.splitext(normImg_str)[0]
+        ext = os.path.splitext(normImg_str)[1]
         # find in list user photos key.lower().startswith('imageName_normal')
         # use this sublist to populate choicesProcessed dictionary
-
         # secondary dropdown that populates once normal image selected
         # get all images names that start with imageName_normal
-        choicesProcessed = {nameNoExt + '_he' + ext, nameNoExt + '_cs' + ext}
-        imageName_processed = tk.StringVar()
-        imageName_processed.set(nameNoExt+'_he'+ext)  # set default option
+        print(normImg_str)
+        rr = requests.get(local_url+'/api/'+email+'/get_image_list_pro_'
+                         +normImg_str)
+        processedList = rr.json()
+        displayList = [nameNoExt+'_'+item+ext for item in processedList]
+        processType = tk.StringVar()
+        # if no processed images for this user
+        if not processedList:
+            choicesProcessed = {'no images'}
+            processType.set('no_images')
+        else:
+            choicesProcessed = displayList
+            processType.set(displayList[0])  # set default option
 
         # give further instructions
         instruction_lbl2 = tk.Label(content_download,
                                     text='Compare to a processed version')
         instruction_lbl2.grid(column=2, row=0, padx=20, pady=10)
         # create dropdown menu
-        processedMenu = tk.OptionMenu(content_download, imageName_processed,
+        processedMenu = tk.OptionMenu(content_download, processType,
                                       *choicesProcessed)
         processedMenu.grid(column=3, row=0, pady=10)
 
         # when dropdown value changes, do this
         def change_dropdownProcessed(*args):
-            print(imageName_processed.get())
+            print(processType.get())
 
         # link function to change dropdown
-        imageName_processed.trace('w', change_dropdownProcessed)
+        processType.trace('w', change_dropdownProcessed)
         return
 
     def returnToMenu_download(downloadWindow):

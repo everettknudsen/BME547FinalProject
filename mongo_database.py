@@ -184,18 +184,18 @@ def new_image_added_pro(email, upload_package):
 
 
 def normal_images(email):
-    """This function simply returns the listField of normal images for a user
+    """This function simply returns a list of normal images (unique) for a user
 
     Args:
         email (string): user email for ID
 
     Returns:
-        mongo_image_list (listField): all uploaded non-processed images for
-        user
+        imgList (list): all uploaded non-processed images for user
     """
     # gets docs
     returnObj = db.users.find({'_id': email},
                               {'original_images.img_name': 1, '_id': 0})
+    print(returnObj.count())
     # below is a list of dictionaries
     nameDictList = returnObj[0]['original_images']
 
@@ -207,3 +207,31 @@ def normal_images(email):
     # remove img name duplicates from list
     imgList = list(dict.fromkeys(imgNames))
     return imgList
+
+
+def processed_images(email, photo_name):
+    """This function simply returns a list of processed images (unique)
+    for a user
+
+    Args:
+        email (string): user email for ID
+        photo_name (string): which photo to load processed options for
+
+    Returns:
+        imgList (list): all uploaded processed images for user
+    """
+    # gets docs
+    returnObj = db.users.find({'_id': email},
+                              {'processed_images.process_type': 1,
+                               'processed_images.img_name': 1, '_id': 0})
+    print(returnObj.count())
+    # below is a list of dictionaries that contain img name and proc_type
+    typeDictList = returnObj[0]['processed_images']
+    # need to get proc_type after filtering by img we want
+    processNames = [entry['process_type'] for entry in typeDictList
+                    if entry['img_name'] == photo_name]
+    print('pn', processNames)
+    # remove process type duplicates from list
+    typeList = list(dict.fromkeys(processNames))
+    print(typeList)
+    return typeList
