@@ -22,6 +22,7 @@ def test_NumpytoPIL():
 
     ans = NumpytoPIL(im)
     assert type(ans) == PIL.Image.Image
+
 '''
 
 @pytest.mark.parametrize('x, expected', [
