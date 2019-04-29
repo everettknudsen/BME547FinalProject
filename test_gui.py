@@ -13,6 +13,13 @@ im1 = im2str(im)
 
 
 def test_NumpytoPIL_0():
+    """First test of numpy to PIL conversion
+    tests that type of output is PIL image
+
+    Args:
+
+    Returns:
+    """
     ans = NumpytoPIL(im)
     # ensure is numpy and not PIL
     assert type(im) == np.ndarray
@@ -21,6 +28,13 @@ def test_NumpytoPIL_0():
 
 
 def test_NumpytoPIL_1():
+    """Second test of numpy to PIL conversion
+    tests that the image is the same before and after conversion
+
+    Args:
+
+    Returns:
+    """
     ans = NumpytoPIL(im)
     # ensure is numpy and not PIL
     assert type(im) == np.ndarray
@@ -29,6 +43,13 @@ def test_NumpytoPIL_1():
 
 
 def test_PILtoNumpy():
+    """Test PIL to numpy conversion
+    tests that type of output is numpy ndarray
+
+    Args:
+
+    Returns:
+    """
     ans = PILtoNumpy(im0)
     # ensure im0 is PIL and not numpy
     assert type(im0) == PIL.Image.Image
@@ -41,11 +62,27 @@ def test_PILtoNumpy():
     (im0, str),
 ])
 def test_im2str(x, expected):
+    """Test image to string conversion
+    tests that type of output is string
+
+    Args:
+        x (np.ndarray or PIL): image to be converted
+        expected (type): str
+
+    Returns:
+    """
     ans = im2str(x)
     assert type(ans) == expected
 
 
 def test_str2im():
+    """Test image to string conversion
+    tests that type of output is an image
+
+    Args:
+
+    Returns:
+    """
     ans = str2im(im1)
     # ensure im1 is string
     assert type(im1) == str
