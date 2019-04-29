@@ -14,12 +14,13 @@ import os
 import numpy as np
 from skimage import exposure
 import datetime
-import image_encoding_tests as CODER
 
 
 global email
 local_url = 'http://127.0.0.1:5000'
+
 # server = 'http://jek42@vcm-9066.vm.duke.edu:5000'
+
 
 
 def json_serial_date(obj):
@@ -298,13 +299,12 @@ def uploadScreen():
             # ext = os.path.splitext(img_name)[1]
             # img_name_processed = nameNoExt + '_' + process.get() + ext
 
-            # print(np.asarray(img).nbytes)
+            print(np.asarray(img).nbytes)
             # create normal package
-            # print(sys.getsizeof(im2str(img)))
+            print(sys.getsizeof(im2str(img)))
             currTime = datetime.datetime.now()
             serialDate = json_serial_date(currTime)
-            enc_img = CODER.encode_image_as_b64(np.asarray(img))
-            upload_package = {'img_name': img_name, 'img_data': enc_img,
+            upload_package = {'img_name': img_name, 'img_data': im2str(img),
                               'img_size': [w, h],
                               'timestamp': serialDate}
             try:
@@ -422,8 +422,9 @@ def downloadScreen():
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
     r = requests.get(local_url+'/api/'+email+'/get_image_list')
-    imageList = r.json()
-
+    print('gui code download list type', type(r.json()), r.json())
+    # populate a dictionary with image choices
+    choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
     imageName_normal = tk.StringVar()
 
     # if no images for this user
@@ -685,7 +686,8 @@ def reverseVideo(pilImg):
 
 email = ''
 root = ''
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     root = tk.Tk()
     loginScreen()
 
