@@ -32,4 +32,4 @@ if __name__ == '__main__':
     image_array = np.array(img)
     img_b64_string = encode_image_as_b64(image_array)
     img = decode_image_from_b64(img_b64_string)
-    # print(type(img))
+    # print(type(Image.fromarray(img)))
