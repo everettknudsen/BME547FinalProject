@@ -15,7 +15,7 @@ from tkinter.messagebox import showerror
 from PIL import Image, ImageTk
 from skimage import exposure
 import image_encoding_tests as CODER
-import log_compression as logger
+import pixel_histogram as histo
 # misc
 import os
 import numpy as np
@@ -122,7 +122,7 @@ def mainMenuScreen():
     back_btn = tk.Button(content_mainMenu, text='Back to Login',
                          command=lambda: returnToLogin(content_mainMenu))
     # add padding for button
-    back_btn.grid(column=2, row=6, pady=100)
+    back_btn.grid(column=2, row=9, pady=100)
     root.mainloop()
 
 
@@ -154,7 +154,7 @@ def uploadScreen():
     root.title('Uploading')
     content_upload = tk.Frame(root)
     content_upload.grid(column=0, row=0)
-    root.geometry('700x300')
+    root.geometry('700x400')
     instruction_lbl = tk.Label(content_upload, text='Choose a photo')
     instruction_lbl.grid(column=0, row=0, padx=20)
 
@@ -207,7 +207,7 @@ def uploadScreen():
     back_btn = tk.Button(content_upload, text='Back',
                          command=lambda: returnToMenu_upload(content_upload),
                          width=20)
-    back_btn.grid(column=0, row=5, pady=10)
+    back_btn.grid(column=0, row=9, pady=10)
 
     def load_img():
         """Function called when 'browse' button is pressed. Opens a native
@@ -238,6 +238,16 @@ def uploadScreen():
                 time_lbl = tk.Label(content_upload, text=str(rightNow))
                 time_lbl.text = rightNow
                 time_lbl.grid(column=0, row=4, columnspan=2)
+
+                imgHist = histo.hist2(img)
+                wh, hh = imgHist.size
+                resizedh = imgHist.resize((100, int(hh*(100/wh))),
+                                          Image.ANTIALIAS)
+                imgTkh = ImageTk.PhotoImage(resizedh)
+                showUploadh = tk.Label(content_upload, image=imgTkh)
+                showUploadh.image = imgTkh
+                showUploadh.grid(column=0, row=6, columnspan=2, rowspan=2)
+
                 nonlocal selectedPhoto
                 selectedPhoto = True
                 # also set initial processed photo to histogram
@@ -264,6 +274,14 @@ def uploadScreen():
                 lat_lbl = tk.Label(content_upload, text=latStr)
                 lat_lbl.text = latStr
                 lat_lbl.grid(column=2, row=5, columnspan=2)
+                imgHist2 = histo.hist2(processedImg)
+                wh2, hh2 = imgHist2.size
+                resizedh2 = imgHist2.resize((100, int(hh2*(100/wh2))),
+                                          Image.ANTIALIAS)
+                imgTkh2 = ImageTk.PhotoImage(resizedh2)
+                showUploadh2 = tk.Label(content_upload, image=imgTkh2)
+                showUploadh2.image = imgTkh2
+                showUploadh2.grid(column=2, row=6, columnspan=2, rowspan=2)
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File",
                           "Failed to read file\n'%s'" % fname)
@@ -431,6 +449,14 @@ def uploadScreen():
         lat_lbl = tk.Label(content_upload, text=latStr)
         lat_lbl.text = latStr
         lat_lbl.grid(column=2, row=5, columnspan=2)
+        imgHist2 = histo.hist2(processedImg)
+        wh2, hh2 = imgHist2.size
+        resizedh2 = imgHist2.resize((100, int(hh2*(100/wh2))),
+                                  Image.ANTIALIAS)
+        imgTkh2 = ImageTk.PhotoImage(resizedh2)
+        showUploadh2 = tk.Label(content_upload, image=imgTkh2)
+        showUploadh2.image = imgTkh2
+        showUploadh2.grid(column=2, row=6, columnspan=2, rowspan=2)
 
     root.mainloop()
 
@@ -464,7 +490,7 @@ def downloadScreen():
     root.title('Downloading')
     content_download = tk.Frame(root)
     content_download.grid(column=0, row=0)
-    root.geometry('800x300')
+    root.geometry('800x400')
 
     instruction_lbl = tk.Label(content_download,
                                text='Choose a uploaded photo')
@@ -493,7 +519,7 @@ def downloadScreen():
                          command=lambda:
                              returnToMenu_download(content_download))
     # add padding for button
-    back_btn.grid(column=0, row=6, pady=30)
+    back_btn.grid(column=0, row=9, pady=30)
 
     # initialize width and height variables
     w = 0
@@ -545,7 +571,15 @@ def downloadScreen():
                                        width=20, command=lambda:
                                            downloadPhoto(content_download,
                                                          PILdl_norm, imName))
-            download_btn_1.grid(column=0, row=6, pady=10)
+            download_btn_1.grid(column=0, row=9, pady=10)
+            imgHist = histo.hist2(PILdl_norm)
+            wh, hh = imgHist.size
+            resizedh = imgHist.resize((100, int(hh*(100/wh))),
+                                      Image.ANTIALIAS)
+            imgTkh = ImageTk.PhotoImage(resizedh)
+            showUploadh = tk.Label(content_download, image=imgTkh)
+            showUploadh.image = imgTkh
+            showUploadh.grid(column=0, row=6, columnspan=2, rowspan=2)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % imName)
             logging.error('Failed to read image file.')
@@ -673,7 +707,15 @@ def downloadScreen():
                                            width=20, command=lambda:
                                                downloadPhoto(content_download,
                                                              PILdl, procName))
-                download_btn_2.grid(column=2, row=6, pady=10)
+                download_btn_2.grid(column=2, row=9, pady=10)
+                imgHist2 = histo.hist2(PILdl)
+                wh2, hh2 = imgHist2.size
+                resizedh2 = imgHist2.resize((100, int(hh2*(100/wh2))),
+                                          Image.ANTIALIAS)
+                imgTkh2 = ImageTk.PhotoImage(resizedh2)
+                showUploadh2 = tk.Label(content_download, image=imgTkh2)
+                showUploadh2.image = imgTkh2
+                showUploadh2.grid(column=2, row=6, columnspan=2, rowspan=2)
             except:  # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read f"
                           "ile\n'%s'" % procName)

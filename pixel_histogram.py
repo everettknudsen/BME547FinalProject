@@ -1,40 +1,28 @@
-import cv2
 import numpy as np
 from PIL import Image
-import io
-from skimage import io as im
 from matplotlib import pyplot as plt
-from skimage import exposure
-from gui import NumpytoPIL, PILtoNumpy
+import cv2
 
 
-def pixel_histogram_RBG(filename):
-    img = cv2.imread(filename)
-    color = ('b', 'g', 'r')
-    for i, col in enumerate(color):
-        histr = cv2.calcHist([img], [i], None, [256], [0, 256])
-        plt.plot(histr, color=col)
-        plt.xlim([0, 256])
-    plt.show()
-
-
-def pixel_histogram_reg(filename):
-    img = cv2.imread(filename, 0)
-    print(type(img))
-    print(type(img.ravel()))
-    plt.figure(1)
-    plt.subplot(111)
-    plt.hist(img.ravel(), 256, [0, 256]);
-    plt.show()
-
-
-def histogram(pilImg):
-    npImg = np.array(pilImg)
-    return NumpytoPIL(exposure.histogram(npImg))
-
-
-if __name__ == "__main__":
-    filename = 'new-img.jpg'
-    pilImg = Image.open(filename)
-    hist = histogram(pilImg)
-    im.show(hist)
+def hist2(pilImg):
+    pil_image = pilImg.convert('RGB') 
+    open_cv_image = np.array(pil_image) 
+    # Convert RGB to BGR 
+    img = open_cv_image[:, :, ::-1].copy()
+    color = ('b','g','r')
+    fig = plt.figure(frameon=False)
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+    for i,col in enumerate(color):
+        histr = cv2.calcHist([img],[i],None,[256],[0,256])
+        plt.plot(histr,color = col)
+        plt.xlim([0,256])
+    fig.show()
+    canvas = plt.get_current_fig_manager().canvas
+    canvas.draw()
+    pil_image = Image.frombytes('RGB', canvas.get_width_height(), 
+                 canvas.tostring_rgb())
+    pil_image.save('temp.png', 'PNG')
+    plt.close()
+    return pil_image
