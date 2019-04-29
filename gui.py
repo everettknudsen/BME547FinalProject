@@ -4,18 +4,23 @@ Created on Thu Apr 25 20:15:05 2019
 
 @author: nicwainwright
 """
+# server
 import pymongo
 import requests
+# graphics
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror
+# image processing
 from PIL import Image, ImageTk
+from skimage import exposure
+import image_encoding_tests as CODER
+import log_compression as logger
+# misc
 import os
 import numpy as np
-from skimage import exposure
-import datetime
-import image_encoding_tests as CODER
 import logging
+import datetime
 
 
 global email
