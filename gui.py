@@ -15,6 +15,7 @@ import numpy as np
 from skimage import exposure
 import datetime
 import image_encoding_tests as CODER
+import logging
 
 
 global email
@@ -261,6 +262,7 @@ def uploadScreen():
             except:                     # <- naked except is a bad idea
                 showerror("Open Source File",
                           "Failed to read file\n'%s'" % fname)
+                logging.error('Failed to read image file.')
         else:
             print(fname.lower(), "is not a valid photo file")
 
@@ -365,6 +367,7 @@ def uploadScreen():
                     lbl3_suc.grid(column=1, row=1, pady=20)
             except pymongo.errors.WriteError:
                 print('database full')
+                logging.error('Database full.')
         else:
             print('havent chosen photo')
 
@@ -540,6 +543,7 @@ def downloadScreen():
             download_btn_1.grid(column=0, row=6, pady=10)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % imName)
+            logging.error('Failed to read image file.')
         return
 
     # link function to change dropdown
@@ -668,6 +672,7 @@ def downloadScreen():
             except:  # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read f"
                           "ile\n'%s'" % procName)
+                logging.error('Failed to read image file.')
             return
 
         # link function to change dropdown
