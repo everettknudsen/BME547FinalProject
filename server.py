@@ -288,5 +288,6 @@ def str2im(img):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='image_processor.log', level=logging.INFO)
     app.run()
     # app.run(host='0.0.0.0')

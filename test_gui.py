@@ -1,6 +1,6 @@
 import pytest
 
-from skimage import exposure, data
+from skimage import data
 import PIL
 from PIL import Image
 import numpy as np
@@ -41,3 +41,29 @@ def test_PILtoNumpy():
     ans = PILtoNumpy(im0)
 
     assert type(ans) == np.ndarray
+
+
+def test_is_email():
+    """Test is_email with inputs expected to raise custom
+    NotEmail error
+    """
+    from server import is_email, NotEmail
+
+    with pytest.raises(NotEmail):
+        is_email('is.this.an.email')
+
+    with pytest.raises(NotEmail):
+        is_email('how@about@this')
+
+    with pytest.raises(NotEmail):
+        is_email('or.maybe@this')
+
+
+def run_test_is_email(self):
+    """Test is_email using valid input
+    """
+    from server import is_email, NotEmail
+    try:
+        is_email('this.is.good@email.com')
+    except NotEmail:
+        self.fail('is_email raised an unexpected error.')
