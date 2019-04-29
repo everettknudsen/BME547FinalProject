@@ -195,7 +195,6 @@ def normal_images(email):
     # gets docs
     returnObj = db.users.find({'_id': email},
                               {'original_images.img_name': 1, '_id': 0})
-    print(returnObj.count())
     # below is a list of dictionaries
     nameDictList = returnObj[0]['original_images']
 
@@ -224,14 +223,37 @@ def processed_images(email, photo_name):
     returnObj = db.users.find({'_id': email},
                               {'processed_images.process_type': 1,
                                'processed_images.img_name': 1, '_id': 0})
-    print(returnObj.count())
     # below is a list of dictionaries that contain img name and proc_type
     typeDictList = returnObj[0]['processed_images']
     # need to get proc_type after filtering by img we want
     processNames = [entry['process_type'] for entry in typeDictList
                     if entry['img_name'] == photo_name]
-    print('pn', processNames)
     # remove process type duplicates from list
     typeList = list(dict.fromkeys(processNames))
-    print(typeList)
     return typeList
+
+
+def download_normal_img(email, photo_name):
+    """This function simply returns a list of processed images (unique)
+    for a user
+
+    Args:
+        email (string): user email for ID
+        photo_name (string): which photo to load processed options for
+
+    Returns:
+        photoString (str): string of encoded photo data
+    """
+
+    returnObj = db.users.find({'_id': email},
+                              {'original_images.img_name': 1,
+                               'original_images.img_data': 1, '_id': 0})
+    # below is a list of dictionaries that contain img name and img_data
+    origDictList = returnObj[0]['original_images']
+    # need to get img_data after filtering by img name we want
+    imgData = [entry['img_data'] for entry in origDictList
+                    if entry['img_name'] == photo_name]
+    # remove process type duplicates from list
+    oneImg = list(dict.fromkeys(imgData))
+    return oneImg[0]
+    

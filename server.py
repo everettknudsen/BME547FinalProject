@@ -155,8 +155,8 @@ def get_image(email, img_name):
 
     Returns:
     """
-    img_data, metrics = pull_image(email, img_name)
-    return jsonify(img_name, img_data, metrics)
+    img_data = mdb.download_normal_img(email, img_name)
+    return jsonify(img_data)
 
 
 def pull_image(img_name):

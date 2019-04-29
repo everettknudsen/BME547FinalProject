@@ -473,13 +473,19 @@ def downloadScreen():
         image.
         """
         nonlocal imageName_normal, w, h
+        """
         dirPath = 'C:/Users/wainw/Pictures/'
         filename = imageName_normal.get()
         fname = dirPath + filename
+        """
+        rDown = requests.get(local_url+'/api/'+email+'/'
+                             ''+imageName_normal.get()+'/get_image')
+        imgStr_download = rDown.json()
+        imgPIL_download = Image.fromarray(decode_image_from_b64(imgStr_download))
         try:
-            img = Image.open(fname)
-            w, h = img.size
-            resized = img.resize((100, int(h*(100/w))), Image.ANTIALIAS)
+            w, h = imgPIL_download.size
+            resized = imgPIL_download.resize((100, int(h*(100/w))),
+                                             Image.ANTIALIAS)
             imgTk = ImageTk.PhotoImage(resized)
             showDownload = tk.Label(content_download, image=imgTk)
             showDownload.image = imgTk
@@ -515,7 +521,6 @@ def downloadScreen():
         # use this sublist to populate choicesProcessed dictionary
         # secondary dropdown that populates once normal image selected
         # get all images names that start with imageName_normal
-        print(normImg_str)
         rr = requests.get(local_url+'/api/'+email+'/get_image_list_pro_'
                          +normImg_str)
         processedList = rr.json()
