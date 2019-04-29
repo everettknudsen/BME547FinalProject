@@ -43,6 +43,7 @@ def post_login():
         message = 'user exists'
     else:
         message = mdb.add_new_user(email)
+        logging.info('New user added: {}'.format(email))
 
     # return jsonify(r)
     print(message)
@@ -268,9 +269,11 @@ def is_email(x):
             pass
         else:
             message_400 = 'Please enter a valid email address.'
+            logging.warning('Invalid email entered: {}'.format(x))
             raise NotEmail(message_400, status_code=400)
     else:
         message_400 = 'Please enter a valid email address.'
+        logging.warning('Invalid email entered: {}'.format(x))
         raise NotEmail(message_400, status_code=400)
 
 
