@@ -19,10 +19,23 @@ import matplotlib.image as mpimg
 import numpy as np
 from skimage import exposure
 import datetime
-import image_encoding_tests as CODER
 
 global email
 local_url = 'http://127.0.0.1:5000'
+
+
+def im2str(img):
+    imgNP = np.array(img)
+    imgPK = pickle.dumps(imgNP)
+    img64 = base64.b64encode(imgPK)
+    imgSTR = str(img64, 'utf-8')
+    return imgSTR
+
+
+def str2im(img):
+    img = base64.b64decode(img)
+    img = pickle.loads(img)
+    return img
 
 
 """ proof that im2str and str2im works
@@ -316,13 +329,12 @@ def uploadScreen():
             # ext = os.path.splitext(img_name)[1]
             # img_name_processed = nameNoExt + '_' + process.get() + ext
 
-            # print(np.asarray(img).nbytes)
+            print(np.asarray(img).nbytes)
             # create normal package
-            # print(sys.getsizeof(im2str(img)))
+            print(sys.getsizeof(im2str(img)))
             currTime = datetime.datetime.now()
             serialDate = json_serial_date(currTime)
-            enc_img = CODER.encode_image_as_b64(np.asarray(img))
-            upload_package = {'img_name': img_name, 'img_data': enc_img,
+            upload_package = {'img_name': img_name, 'img_data': im2str(img),
                               'img_size': [w, h],
                               'timestamp': serialDate}
 
@@ -330,9 +342,9 @@ def uploadScreen():
                               json=upload_package)
             print("response", r)
             # create processed package
-            enc_img_pro = CODER.encode_image_as_b64(np.asarray(processedImg))
             upload_package_processed = {'img_name': img_name,
-                                        'img_data_processed': enc_img_pro,
+                                        'img_data_processed':
+                                            im2str(processedImg),
                                         'img_size_processed': [w2, h2],
                                         'process_type': process.get(),
                                         'timestamp': serialDate,
@@ -437,16 +449,11 @@ def downloadScreen():
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
     r = requests.get(local_url+'/api/'+email+'/get_image_list')
-    imageList = r.json()
-
+    print('gui code download list type', type(r.json()), r.json())
+    # populate a dictionary with image choices
+    choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
     imageName_normal = tk.StringVar()
-
-    # if no images for this user
-    if not imageList:
-        choices = {'no images'}
-    else:
-        choices = imageList
-        imageName_normal.set(imageList[0])  # set default option
+    imageName_normal.set('select image')  # set default option
 
     # create dropdown menu that create a new menu for processed options
     imageMenu = tk.OptionMenu(content_download, imageName_normal, *choices,
@@ -594,6 +601,7 @@ def contrastStretch(pilImg):
 
 
 def logCompression(pilImg):
+    npImg = PILtoNumpy(pilImg)
     c = 255 / (np.log10(1 + np.amax(npImg)))
     for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
         all_pixels[...] = c * np.log10(1 + all_pixels)
@@ -609,7 +617,8 @@ def reverseVideo(pilImg):
 
 email = ''
 root = ''
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     root = tk.Tk()
     loginScreen()
 
