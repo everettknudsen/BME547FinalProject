@@ -36,6 +36,7 @@ Normal and processed images are separated from one another in the database to al
 
 ### Future improvements
 * Capability to handle multiple files or .zip files
+* Decrease time latency for log compression and reverse video
 
 ## Notes
 ### Troubleshooting
