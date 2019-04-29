@@ -50,6 +50,9 @@ You will be asked if you would like to upload or download. Choose one.
 8. Finally download the image in your desired format.
 9. Repeat any of these actions as you desire!
 
+### Docstrings
+The sphinx docs have been generated, however, our main grpahical function that is our client, is not cooperating with the autogeneration. Even though it is docstringed in the same way, the module won't add it's functions to the docs. Please refer to the code itself to find descriptions.
+
 ### Deliverables
 * [README.md](https://github.com/everettknudsen/BME547FinalProject/blob/master/README.md)
 * Link to [Image Processing Server-Server On Page](http://vcm-9066.vm.duke.edu:5000/)
