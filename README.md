@@ -28,8 +28,6 @@ In order to be sent to the server and database, images are passed through a seri
 #### Download
 The download option opens a window with a dropdown menu containing the filenames of a user's uploaded images. Choosing a filename shows the original image as well as corresponding processed images, if any were created. The user can select images to download.
 
-The images can be downloaded as `.jpg`, `.png` or `.tiff` files.
-
 #### Database structure
 Normal and processed images are separated from one another in the database to allow for ease of querying the database should the user wish to download a previously processed imaged in the future. It also allows for the user to retain their initial image and makes comparative display easier on the back end.
 
@@ -54,6 +52,9 @@ You will be asked if you would like to upload or download. Choose one.
 ### Future improvements
 * Capability to handle multiple files or .zip files
 * Decrease time latency for log compression and reverse video (better processing algorithms)
+* Download as `.jpg`, `.png` or `.tiff` files.
 
 ### Troubleshooting
-Ensuring images were compatible with the server/database (in terms of data type and size) presented a challenge. Preliminary attempts to convert images to base64 strings were unsuccessful as the resulting strings were one-dimensional. However, the `pickle` module was helpful in this regard by preserving the serialized structure of the images during conversion to a string format.
+Ensuring images were compatible with the server/database (in terms of data type and size) presented a challenge. Preliminary attempts to convert images to base64 strings were unsuccessful as the resulting strings were one-dimensional. Proper encoding to base64 strings, then decoding on download made it possible for the images to be stored.
+
+While MongoDB is presented as "easy-to-use", we did not find this to be the case. It seemed like a better introduction might be necessary in order to really build out a fully functioning database. This is especially the case if the database will be used in commercial applications. We found there were many packages and methods of structuring your database or creating your class. Therefore, documentation is varied. It seems like people are just starting to fully embrace `pymodm` as compared to `mongoengine` or `pymongo`.
