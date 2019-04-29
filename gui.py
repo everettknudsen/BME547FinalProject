@@ -449,7 +449,7 @@ def downloadScreen():
     instruction_lbl.grid(column=0, row=0, padx=20, pady=10)
 
     r = requests.get(local_url+'/api/'+email+'/get_image_list')
-    print('gui code download list type', type(r.json()), r.json())
+    print('gui code download list type', type(r), r)
     # populate a dictionary with image choices
     choices = {'select image', 'front.png', 'headshot.jpg', 'pass.jpg'}
     imageName_normal = tk.StringVar()
@@ -601,7 +601,6 @@ def contrastStretch(pilImg):
 
 
 def logCompression(pilImg):
-    npImg = PILtoNumpy(pilImg)
     c = 255 / (np.log10(1 + np.amax(npImg)))
     for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
         all_pixels[...] = c * np.log10(1 + all_pixels)

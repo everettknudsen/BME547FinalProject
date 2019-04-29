@@ -110,19 +110,16 @@ def new_image_added(email, upload_package):
         logging.debug(user)
 
     try:
-        original_images = user['original_images']
+        original_images = upload_package
         name = upload_package['img_name']
-        original_images.append(upload_package)
         db.users.update({'_id': email},
                         {'$addToSet': {'original_images': original_images}})
-
-        print_users()
     except KeyError:
         print('first image')
         original_images = [upload_package]
         print(type(original_images))
         db.users.update({'_id': email},
-                        {'$push': {'original_images': original_images}},
+                        {'$set': {'original_images': original_images}},
                         upsert=True)
         print('current user is', user)
 
@@ -149,14 +146,13 @@ def new_image_added_pro(email, upload_package):
         logging.debug(user)
 
     try:
-        processed_images = user['processed_images']
-        processed_images.append(upload_package)
+        processed_images = upload_package
         db.users.update({'_id': email},
                         {'$addToSet': {'processed_images': processed_images}})
     except KeyError:
         processed_images = [upload_package]
         db.users.update({'_id': email},
-                        {'$push': {'processed_images': processed_images}},
+                        {'$set': {'processed_images': processed_images}},
                         upsert=True)
 
     process_type = upload_package['process_type']
@@ -199,9 +195,11 @@ def normal_images(email):
     """
     # gets database for this user
     user = get_one_user(email)
-    image_list = user['original_images']
-
-    # extract image_list
-    print('\n\n mongo side type of list', type(image_list))
+    print('\n user type', type(user))
+    #  print([item['original_images'] for item in user])
+        
     
-    return image_list
+    #prices = [p["Price"] for p in user["Prices per dates"]]
+    #First print statement
+    
+    return {'empty'}
