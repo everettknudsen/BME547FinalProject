@@ -609,12 +609,7 @@ def reverseVideo(pilImg):
 
 email = ''
 root = ''
-<<<<<<< HEAD
 if __name__ == "__main__":
-=======
-
-if __name__ == '__main__':
->>>>>>> Make root and email global, add if main so testing can be completed
     root = tk.Tk()
     loginScreen()
 
