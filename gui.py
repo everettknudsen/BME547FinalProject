@@ -16,6 +16,7 @@ from PIL import Image, ImageTk
 from skimage import exposure
 import image_encoding_tests as CODER
 import pixel_histogram as histo
+import imSave
 # misc
 import os
 import numpy as np
@@ -499,7 +500,7 @@ def downloadScreen():
     r = requests.get(local_url+'/api/'+email+'/get_image_list')
     imageList = r.json()
 
-    imageName_normal = tk.StringVar()
+    imageName_normal = tk.StringVar(content_download)
 
     # if no images for this user
     if not imageList:
@@ -526,7 +527,8 @@ def downloadScreen():
     h = 0
     w2 = 0
     h2 = 0
-
+    DLchoice = 'png'
+    DLchoice2 = 'png'
     # when dropdown value changes, do this
     def change_dropdown(*args):
         """Function called when dropdown of image is changed. Displays the
@@ -535,7 +537,7 @@ def downloadScreen():
         Args:
             *args: takes tk.OptionMenu values and updates correspondingly
         """
-        nonlocal imageName_normal, w, h
+        nonlocal imageName_normal, w, h, DLchoice, DLchoice2
         """
         dirPath = 'C:/Users/wainw/Pictures/'
         filename = imageName_normal.get()
@@ -572,6 +574,7 @@ def downloadScreen():
                                            downloadPhoto(content_download,
                                                          PILdl_norm, imName))
             download_btn_1.grid(column=0, row=9, pady=10)
+
             imgHist = histo.hist2(PILdl_norm)
             wh, hh = imgHist.size
             resizedh = imgHist.resize((100, int(hh*(100/wh))),
@@ -580,6 +583,16 @@ def downloadScreen():
             showUploadh = tk.Label(content_download, image=imgTkh)
             showUploadh.image = imgTkh
             showUploadh.grid(column=0, row=6, columnspan=2, rowspan=2)
+
+            # download as file type
+            DLchoices = {'jpg', 'png', 'tiff'}
+            DLchoice = tk.StringVar(content_download)
+            DLchoice.set('png')  # set default option
+            # create dropdown menu that create a new menu for save type
+            dl_lbl = tk.Label(content_download, text='Save as type:')
+            dl_lbl.grid(column=0, row=8)
+            imageMenu = tk.OptionMenu(content_download, DLchoice, *DLchoices)
+            imageMenu.grid(column=1, row=8)
         except:  # <- naked except is a bad idea
             showerror("Open Source File", "Failed to read file\n'%s'" % imName)
             logging.error('Failed to read image file.')
@@ -597,10 +610,12 @@ def downloadScreen():
             filename (str): string for corresponding image that will be the
             savefile name
         """
+        nonlocal DLchoice, DLchoice2
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
         # ext = os.path.splitext(imageName_normal.get())[1]
         saveDir = askdirectory()
-        img.save(saveDir + '/' + filename)
+        imSave.save_im_as(img, DLchoice.get(), filename.replace('.'+DLchoice.get(),""), saveDir)
+        # img.save(saveDir + '/' + filename)
         downloadSuccess = tk.Toplevel(downloadWindow)
         # submitSucess.geometry("400x150")  # (optional)
         lbl_down = tk.Label(downloadSuccess,
@@ -622,7 +637,7 @@ def downloadScreen():
         processed images. Performs a GET request to get the list of images
         using email and image_name
         """
-        nonlocal imageName_normal
+        nonlocal imageName_normal, DLchoice2
         normImg_str = imageName_normal.get()
         nameNoExt = os.path.splitext(normImg_str)[0]
         ext = os.path.splitext(normImg_str)[1]
@@ -634,7 +649,7 @@ def downloadScreen():
                           '_' + normImg_str)
         processedList = rr.json()
         displayList = [nameNoExt+'_'+item+ext for item in processedList]
-        processType = tk.StringVar()
+        processType = tk.StringVar(content_download)
         # if no processed images for this user
         if not processedList:
             choicesProcessed = {'no images'}
@@ -661,7 +676,7 @@ def downloadScreen():
             Args:
                 *args: takes tk.OptionMenu values and updates correspondingly
             """
-            nonlocal processType, w2, h2, imageName_normal
+            nonlocal processType, w2, h2, imageName_normal, DLchoice2
             imName = imageName_normal.get()
             nameNoExt = os.path.splitext(imName)[0]
             ext = os.path.splitext(imName)[1]
@@ -716,6 +731,15 @@ def downloadScreen():
                 showUploadh2 = tk.Label(content_download, image=imgTkh2)
                 showUploadh2.image = imgTkh2
                 showUploadh2.grid(column=2, row=6, columnspan=2, rowspan=2)
+                # download as file type
+                DLchoices2 = {'jpg', 'png', 'tiff'}
+                DLchoice2 = tk.StringVar(content_download)
+                DLchoice2.set('png')  # set default option
+                # create dropdown menu that create a new menu for save type
+                dl_lbl2 = tk.Label(content_download, text='Save as type:')
+                dl_lbl2.grid(column=2, row=8)
+                imageMenu2 = tk.OptionMenu(content_download, DLchoice2, *DLchoices2)
+                imageMenu2.grid(column=3, row=8)
             except:  # <- naked except is a bad idea
                 showerror("Open Source File", "Failed to read f"
                           "ile\n'%s'" % procName)
