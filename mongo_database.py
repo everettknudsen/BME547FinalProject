@@ -194,8 +194,18 @@ def normal_images(email):
         user
     """
     # gets database for this user
-    user = get_one_user(email)
-    print('\n user type', type(user))
-    #  print([item['original_images'] for item in user])
+    # user = get_one_user(email)
+    # print('\n user type', type(user))
+    returnObj = db.users.find({'_id': email},
+                               {'original_images.img_name': 1, '_id': 0})
+    # below is a list of dictionaries
+    nameDictList = returnObj[0]['original_images']
 
-    return {'empty'}
+    # img names is populated by keyvalues of the above dictionary
+    imgNames = []
+    for entryDict in nameDictList:
+        imgNames.append(entryDict['img_name'])
+
+    # remove img name duplicates from list
+    imgList = list(dict.fromkeys(imgNames))
+    return imgList

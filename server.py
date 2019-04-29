@@ -111,7 +111,6 @@ def get_image_list(email):
     # for user in User.objects.raw({}):
     # image_dict = database['name']
     mongo_image_list = mdb.normal_images(email)
-    print('server code mongo list type', type(mongo_image_list))
     return jsonify(mongo_image_list)
 
 
