@@ -284,10 +284,15 @@ def download_processed_img(email, photo_name, processType):
     # lets strip it to just the 'rv'
     nameNoExt = os.path.splitext(photo_name)[0]
     ext = os.path.splitext(photo_name)[1]
-    process = processType.strip(nameNoExt+'_'+ext)
+    print('namenoext:',nameNoExt, ' ext:', ext)
+    process = processType.replace(nameNoExt+'_', '')
+    print('finding1', process, 'type', processType)
+    process = process.replace(ext, '')
+    print('finding: ', process, ' after', ext)
     imgData = [entry['img_data_processed'] for entry in procDictList
                     if (entry['img_name'] == photo_name and
                         entry['process_type'] == process)]
+    print(len(imgData))
     # remove process type duplicates from list
     oneImg = list(dict.fromkeys(imgData))
     return oneImg[0]

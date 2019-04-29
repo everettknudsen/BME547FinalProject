@@ -4,39 +4,22 @@ Created on Thu Apr 25 20:15:05 2019
 
 @author: nicwainwright
 """
-
+import pymongo
 import requests
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror
 from PIL import Image, ImageTk
-import pickle
-import base64
 import os
-import sys
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 from skimage import exposure
 import datetime
 import image_encoding_tests as CODER
 
+
 global email
 local_url = 'http://127.0.0.1:5000'
-
-
-""" proof that im2str and str2im works
-if __name__ == '__main__':
-    filepath = 'C:/Users/Kendall/Pictures/Proteinogenic Amino Acids.png'
-    img0 = Image.open(filepath)
-
-    img0 = im2str(img0)
-    img0 = str2im(img0)
-    figure1 = plt.figure()
-    plt.interactive(True)
-    plt.imshow(img0)
-    plt.show()
-"""
+# server = 'http://jek42@vcm-9066.vm.duke.edu:5000'
 
 
 def json_serial_date(obj):
@@ -186,6 +169,8 @@ def uploadScreen():
     fname = ''
     img = ''
     processedImg = ''
+    showProcessed = ''
+    imgTkProcessed = ''
     latency = 0.0
     w = 0
     h = 0
@@ -216,7 +201,7 @@ def uploadScreen():
     back_btn = tk.Button(content_upload, text='Back',
                          command=lambda: returnToMenu_upload(content_upload),
                          width=20)
-    back_btn.grid(column=4, row=6, pady=50)
+    back_btn.grid(column=0, row=5, pady=10)
 
     def load_img():
         """Function called when 'browse' button is pressed. Opens a native
@@ -224,12 +209,13 @@ def uploadScreen():
         uploadScreen().
         """
         nonlocal fname, img, processedImg, latency, w, h, w2, h2
+        nonlocal showProcessed, imgTkProcessed
         fname = askopenfilename(filetypes=(("Image Files", "*.jpeg;*.jpg;"
                                             "*.tiff;.*tif;*.png;"),
                                            ("All files", "*.*")))
 
         if fname.lower().endswith(('.jpeg', '.jpg', '.tiff', '.tif', '.png')):
-
+            nonlocal processedImg
             try:
                 img = Image.open(fname)
                 w, h = img.size
@@ -266,9 +252,7 @@ def uploadScreen():
             uploadWindow (tk.Frame): upload window to be destroyed before
             moving to main menu
         """
-        print("doing")
         destroyWindow(uploadWindow)
-        print("done")
         mainMenuScreen()
 
     def returnToMenu_uploadSucc(successWindow, uploadWindow):
@@ -281,10 +265,8 @@ def uploadScreen():
             successWindow (tk.Frame): success window to be destroyed before
             moving to main menu
         """
-        print("doing")
         destroyWindow(successWindow)
         destroyWindow(uploadWindow)
-        print("done")
         mainMenuScreen()
 
     def returnToUpload_uploadSucc(successWindow):
@@ -325,41 +307,45 @@ def uploadScreen():
             upload_package = {'img_name': img_name, 'img_data': enc_img,
                               'img_size': [w, h],
                               'timestamp': serialDate}
-
-            r = requests.post(local_url+'/api/'+email+'/post_new_image',
-                              json=upload_package)
-            print("response", r)
-            # create processed package
-            enc_img_pro = CODER.encode_image_as_b64(np.asarray(processedImg))
-            upload_package_processed = {'img_name': img_name,
-                                        'img_data_processed': enc_img_pro,
-                                        'img_size_processed': [w2, h2],
-                                        'process_type': process.get(),
-                                        'timestamp': serialDate,
-                                        'latency': latency}
-
-            r2 = requests.post(local_url+'/api/'+email+'/post_new_image_pro',
-                               json=upload_package_processed)
-            print("response", r2)
-
-            if (r.content == 500 or r2.content == 500):
-                print("failed to add to MONGO, try again.")
-            else:
-                submitSuccess = tk.Toplevel(content_upload)
-                # submitSucess.geometry("400x150")  # (optional)
-                lbl_suc = tk.Label(submitSuccess,
-                                   text='Successfully Submitted Photo')
-                lbl_suc.grid(column=0, row=0, columnspan=2)
-                lbl2_suc = tk.Button(submitSuccess, text='Return to Main Menu',
-                                     width=20, command=lambda:
-                                     returnToMenu_uploadSucc(submitSuccess,
-                                                             uploadWindow))
-                lbl2_suc.grid(column=0, row=1, pady=20)
-                lbl3_suc = tk.Button(submitSuccess, text='Upload Another'
-                                     'Photo or Process', width=30,
-                                     command=lambda:
-                                     returnToUpload_uploadSucc(submitSuccess))
-                lbl3_suc.grid(column=1, row=1, pady=20)
+            try:
+                r = requests.post(local_url+'/api/'+email+'/post_new_image',
+                                  json=upload_package)
+                print("response", r)
+                # create processed package
+                enc_img_pro = CODER.encode_image_as_b64(np.asarray(processedImg))
+                upload_package_processed = {'img_name': img_name,
+                                            'img_data_processed': enc_img_pro,
+                                            'img_size_processed': [w2, h2],
+                                            'process_type': process.get(),
+                                            'timestamp': serialDate,
+                                            'latency': latency}
+    
+                r2 = requests.post(local_url+'/api/'+email+'/post_new_'
+                                   'image_pro',
+                                   json=upload_package_processed)
+                print("response", r2)
+    
+                if (r.content == 500 or r2.content == 500):
+                    print("failed to add to MONGO, try again.")
+                else:
+                    submitSuccess = tk.Toplevel(content_upload)
+                    # submitSucess.geometry("400x150")  # (optional)
+                    lbl_suc = tk.Label(submitSuccess,
+                                       text='Successfully Submitted Photo')
+                    lbl_suc.grid(column=0, row=0, columnspan=2)
+                    lbl2_suc = tk.Button(submitSuccess, text='Return to Main Menu',
+                                         width=20, command=lambda:
+                                         returnToMenu_uploadSucc(submitSuccess,
+                                                                 uploadWindow))
+                    lbl2_suc.grid(column=0, row=1, pady=20)
+                    lbl3_suc = tk.Button(submitSuccess, text='Upload Another'
+                                         'Photo or Process', width=30,
+                                         command=lambda:
+                                         returnToUpload_uploadSucc(submitSuccess))
+                    lbl3_suc.grid(column=1, row=1, pady=20)
+            except pymongo.errors.WriteError:
+                print('database full')
+                
         else:
             print('havent chosen photo')
 
@@ -369,7 +355,7 @@ def uploadScreen():
         nonlocal 'fname' which selects the image to be processed based on
         'browse' button.
         """
-        nonlocal process
+        nonlocal process, imgTkProcessed, showProcessed, processedImg
         nonlocal fname
         nonlocal latency, w, h, w2, h2
 
@@ -430,7 +416,7 @@ def downloadScreen():
     root.title('Downloading')
     content_download = tk.Frame(root)
     content_download.grid(column=0, row=0)
-    root.geometry('700x300')
+    root.geometry('800x300')
 
     instruction_lbl = tk.Label(content_download,
                                text='Choose a uploaded photo')
@@ -509,10 +495,23 @@ def downloadScreen():
     def downloadPhoto(downloadWindow, img, filename):
         # nameNoExt = os.path.splitext(imageName_normal.get())[0]
         # ext = os.path.splitext(imageName_normal.get())[1]
-        print("downloading original to local")
         saveDir = askdirectory()
         img.save(saveDir + '/' + filename)
-        return
+        downloadSuccess = tk.Toplevel(downloadWindow)
+        # submitSucess.geometry("400x150")  # (optional)
+        lbl_down = tk.Label(downloadSuccess,
+                           text='Successfully Downloaded Photo: '+filename)
+        lbl_down.grid(column=0, row=0, columnspan=2)
+        lbl2_down = tk.Button(downloadSuccess, text='Return to Main Menu',
+                             width=20, command=lambda:
+                             returnToMenu_downloadSucc(downloadSuccess,
+                                                     downloadWindow))
+        lbl2_down.grid(column=0, row=1, pady=20)
+        lbl3_down = tk.Button(downloadSuccess, text='Download Another'
+                             'Photo or Process', width=30,
+                             command=lambda:
+                             returnToDownload_downloadSucc(downloadSuccess))
+        lbl3_down.grid(column=1, row=1, pady=20)
 
     def processedOptions():
         nonlocal imageName_normal
@@ -554,10 +553,11 @@ def downloadScreen():
             imName = imageName_normal.get()
             nameNoExt = os.path.splitext(imName)[0]
             ext = os.path.splitext(imName)[1]
-            procName = nameNoExt+'_'+processType.get()+ext
-            rDown_pro = requests.get(local_url+'/api/'+email+'/'
-                                 ''+imageName_normal.get()+'/get_image_pro_'
-                                 ''+processType.get())
+            process = processType.get().replace(nameNoExt+'_', '')
+            process = process.replace(ext, '')            
+            # print(procName)  # this is correct . displays im1_rv.jpg
+            rDown_pro = requests.get(local_url+'/api/'+email+'/'+imName+'/get'
+                                     '_image_pro_'+process)
             imgStr_download_pro = rDown_pro.json()
             decodedDL = CODER.decode_image_from_b64(imgStr_download_pro)
             PILdl = Image.fromarray(decodedDL)
@@ -596,6 +596,31 @@ def downloadScreen():
         destroyWindow(downloadWindow)
         mainMenuScreen()
         return
+
+    def returnToMenu_downloadSucc(successWindow, downloadWindow):
+        """Helper function for a 'return to main menu' button to move from
+        Download success screen to Main Menu
+
+        Args:
+            downloadWindow (tk.Frame): download window to be destroyed before
+            moving to main menu
+            successWindow (tk.Frame): success window to be destroyed before
+            moving to main menu
+        """
+        destroyWindow(successWindow)
+        destroyWindow(downloadWindow)
+        mainMenuScreen()
+
+    def returnToDownload_downloadSucc(successWindow):
+        """Helper function for a button to move back from download success
+        screen to Download screen. Preserves previously selected images, but
+        allows new images to be selected.
+
+        Args:
+            successWindow (tk.Frame): success window to be destroyed before
+            moving to back to download window
+        """
+        destroyWindow(successWindow)
 
     root.mainloop()
     return
@@ -644,6 +669,7 @@ def contrastStretch(pilImg):
 
 
 def logCompression(pilImg):
+    npImg = PILtoNumpy(pilImg)
     c = 255 / (np.log10(1 + np.amax(npImg)))
     for all_pixels in np.nditer(npImg, op_flags=['readwrite']):
         all_pixels[...] = c * np.log10(1 + all_pixels)

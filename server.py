@@ -162,7 +162,7 @@ def get_image(email, img_name):
 
 @app.route('/api/<email>/<img_name>/get_image_pro_<processType>', methods=['GET'])
 def get_image_pro(email, img_name, processType):
-    """Pulls up image name and data when chosen from dropdown menu
+    """Pulls up image data when chosen from dropdown menu
 
     Args:
         user (str): user email (primary key)
@@ -288,3 +288,4 @@ def str2im(img):
 
 if __name__ == '__main__':
     app.run()
+    # app.run(host='0.0.0.0')
